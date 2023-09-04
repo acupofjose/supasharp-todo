@@ -1,0 +1,38 @@
+@using SupasharpTodo.Shared.Interfaces
+@inject ITodoService TodoService
+
+<div class="block mx-auto max-w-md w-full">
+    @if (!TodoService.IsLoading)
+    {
+        <TodosHeader SelectedView="@SelectedView"/>
+        <TodoList SelectedView="@SelectedView"/>
+        <KeyboardShortcutList/>
+    }
+    else
+    {
+        <TodoScaffold/>
+    }
+</div>
+
+@code {
+
+    public enum TodoViewType
+    {
+        Inbox,
+        Today,
+        Upcoming,
+        Logbook,
+        List,
+        Trash
+    }
+
+    [Parameter]
+    public TodoViewType SelectedView { get; set; } = TodoViewType.Inbox;
+
+    protected override void OnInitialized()
+    {
+        TodoService.PropertyChanged += (_, _) => StateHasChanged();
+    }
+
+}
+

@@ -1,0 +1,26 @@
+﻿@using Supabase.Gotrue
+@inject Supabase.Client Supabase
+
+<button class="btn" @onclick="HandleButtonClicked">
+    <img class="h-6 w-6" src="/icons/github.png"/>
+    Login with Github
+</button>
+
+@code {
+
+    private async void HandleButtonClicked(MouseEventArgs obj)
+    {
+        var state = await Supabase.Auth.SignIn(Constants.Provider.Github, new SignInOptions
+        {
+            FlowType = Constants.OAuthFlowType.PKCE,
+            RedirectTo = "supasharptodo://oauth/github/callback"
+        });
+
+        WebAuthenticatorResult authResult = await WebAuthenticator.Default.AuthenticateAsync(state.Uri, new Uri("supasharptodo://"));
+
+        if (authResult.Properties.TryGetValue("code", out var code))
+        {
+            await Supabase.Auth.ExchangeCodeForSession(state.PKCEVerifier!, code);
+        }
+    }
+}

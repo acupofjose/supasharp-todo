@@ -1,0 +1,26 @@
+﻿@page "/logbook"
+@using SupasharpTodo.Shared.Interfaces
+@using SupasharpTodo.BlazorWASM.Shared.Auth
+@using SupasharpTodo.BlazorWASM.Shared.Todos
+@inject IAppStateService AppState;
+
+<PageTitle>Supa#Todos</PageTitle>
+
+@if (AppState.IsLoggedIn)
+{
+    <TodosView SelectedView="TodosView.TodoViewType.Logbook"/>
+}
+else
+{
+    <LoginView/>
+}
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        AppState.PropertyChanged += (_, _) => StateHasChanged();
+    }
+
+}
+

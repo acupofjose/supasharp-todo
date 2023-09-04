@@ -1,0 +1,29 @@
+﻿@using Supabase.Gotrue
+@using Blazored.LocalStorage
+@inject Supabase.Client Supabase
+@inject IJSRuntime JS
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
+
+<div class="w-full items-center">
+    <button class="btn btn-default" @onclick="HandleButtonClicked">
+        <img class="h-6 w-6" src="/icons/github-white.png"/>
+        Login with Github
+    </button>
+</div>
+
+@code {
+
+    private async void HandleButtonClicked(MouseEventArgs obj)
+    {
+        var state = await Supabase.Auth.SignIn(Constants.Provider.Github, new SignInOptions
+        {
+            FlowType = Constants.OAuthFlowType.PKCE,
+            RedirectTo = "http://localhost:5100/oauth/callback"
+        });
+
+        await LocalStorage.SetItemAsync("verifier", state.PKCEVerifier);
+        NavManager.NavigateTo(state.Uri.ToString());
+    }
+
+}

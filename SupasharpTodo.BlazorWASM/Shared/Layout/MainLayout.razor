@@ -1,0 +1,69 @@
+﻿@using SupasharpTodo.Shared.Interfaces
+@using System.ComponentModel
+@using System.Collections.Specialized
+@inject IAppStateService AppState
+@inject IJSRuntime JsRuntime
+@inherits LayoutComponentBase
+@implements IDisposable
+
+
+<div class="page relative">
+    @if (Errors.Count > 0)
+    {
+        <div class="absolute top-1 right-1">
+            <div class="alert alert-error animate-in slide-in-from-right-1 duration-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Error! Task failed successfully.</span>
+            </div>
+        </div>
+    }
+    <Navbar/>
+    <div class="drawer md:drawer-open">
+        <input id="drawer" type="checkbox" class="drawer-toggle"/>
+        <main class="drawer-content min-h-[80vh] w-full">
+            <article class="content p-4">
+                @Body
+            </article>
+        </main>
+        @if (AppState.IsLoggedIn)
+        {
+            <div class="drawer-side z-10">
+                <label for="drawer" class="drawer-overlay"></label>
+                <Sidebar/>
+            </div>
+        }
+    </div>
+    <Footer/>
+</div>
+
+@code {
+
+    private List<string> Errors { get; } = new();
+
+    protected override void OnInitialized()
+    {
+        AppState.PropertyChanged += AppStateOnPropertyChanged;
+        AppState.Errors.CollectionChanged += ErrorsOnCollectionChanged;
+    }
+
+    private void ErrorsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems != null)
+            foreach (var item in e.NewItems)
+                Errors.Add(item.ToString()!);
+    }
+
+    public void Dispose()
+    {
+        AppState.PropertyChanged -= AppStateOnPropertyChanged;
+    }
+
+    private void AppStateOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AppState.IsLoggedIn))
+            StateHasChanged();
+    }
+
+}

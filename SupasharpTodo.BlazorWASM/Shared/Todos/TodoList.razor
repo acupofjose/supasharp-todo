@@ -1,0 +1,99 @@
+@using SupasharpTodo.Shared.Models
+@using System.Collections.Specialized
+@using System.ComponentModel
+@using SupasharpTodo.Shared.Interfaces
+@using Toolbelt.Blazor.HotKeys2
+@inject ITodoService TodoService
+@inject HotKeys HotKeys
+@implements IDisposable
+
+@switch (SelectedView)
+{
+    case TodosView.TodoViewType.Inbox:
+        @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null))
+        {
+            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="todo" SelectedView="@SelectedView"/>
+        }
+        break;
+    case TodosView.TodoViewType.Logbook:
+        @foreach (var todo in TodoService.Todos.Where(t => t.CompletedAt != null).OrderBy(x => x.CompletedAt))
+        {
+            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="todo" SelectedView="@SelectedView"/>
+        }
+        break;
+    case TodosView.TodoViewType.Trash:
+        @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt != null))
+        {
+            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="todo" SelectedView="@SelectedView"/>
+        }
+        break;
+}
+
+@code {
+
+    [Parameter]
+    public TodosView.TodoViewType SelectedView { get; set; } = TodosView.TodoViewType.Inbox;
+
+    private List<TodoItem> TodoItemRefs = new();
+
+
+    private TodoItem TodoItemRef
+    {
+        set => TodoItemRefs.Add(value);
+    }
+
+    private HotKeysContext? _hotkeysContext;
+    private int _selectedIndex = -1;
+
+    protected override void OnInitialized()
+    {
+        TodoService.PropertyChanged += TodoServiceOnPropertyChanged;
+        TodoService.Todos.CollectionChanged += TodosOnCollectionChanged;
+        _hotkeysContext = HotKeys.CreateContext()
+            .Add(Code.ArrowDown, OnArrowDown, exclude: Exclude.TextArea)
+            .Add(Code.ArrowUp, OnArrowUp, exclude: Exclude.TextArea)
+            .Add(ModCode.Ctrl, Code.Delete, OnCtrlDelete, exclude: Exclude.TextArea);
+    }
+
+    private async void OnCtrlDelete(HotKeyEntryByCode obj)
+    {
+        Console.WriteLine("Ctrl+Delete was pressed.");
+        await TodoService.MoveToTrash(TodoItemRefs[_selectedIndex].Model);
+    }
+
+    private void OnArrowUp(HotKeyEntryByCode obj)
+    {
+        var nextIndex = _selectedIndex - 1 >= 0 ? _selectedIndex - 1 : TodoItemRefs.Count - 1;
+        TodoItemRefs[nextIndex].Focus();
+        _selectedIndex = nextIndex;
+    }
+
+    private void OnArrowDown(HotKeyEntryByCode obj)
+    {
+        var nextIndex = _selectedIndex + 1 < TodoItemRefs.Count ? _selectedIndex + 1 : 0;
+        TodoItemRefs[nextIndex].Focus();
+        _selectedIndex = nextIndex;
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine("Todolist has disposed.");
+        TodoService.PropertyChanged -= TodoServiceOnPropertyChanged;
+        TodoService.Todos.CollectionChanged -= TodosOnCollectionChanged;
+        _hotkeysContext?.Dispose();
+    }
+
+    private void TodosOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        Console.WriteLine("Collection has changed.");
+        StateHasChanged();
+    }
+
+    private void TodoServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        Console.WriteLine($"Property `{e.PropertyName}` has changed.");
+        if (e.PropertyName == nameof(TodoService.Todos))
+            StateHasChanged();
+    }
+
+}

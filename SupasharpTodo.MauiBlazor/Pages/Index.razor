@@ -1,0 +1,22 @@
+﻿@page "/"
+@using Supabase.Gotrue
+@using Supabase.Gotrue.Interfaces
+@inject Supabase.Client Supabase
+
+@if (Supabase.Auth.CurrentSession != null)
+{
+    <AuthInfo />
+}
+else
+{
+    <GithubLoginButton />
+}
+
+
+@code {
+    protected override void OnInitialized() =>
+        Supabase.Auth.AddStateChangedListener(OnAuthStateChanged);
+
+    private void OnAuthStateChanged(IGotrueClient<User, Session> client, Constants.AuthState state) =>
+        StateHasChanged();
+}

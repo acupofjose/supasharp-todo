@@ -1,0 +1,19 @@
+{
+  "name": "supasharptodo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:tailwind\" \"npm run dev:net\"",
+    "dev:tailwind": "npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/css/tailwind.css -w",
+    "dev:net": "dotnet watch --non-interactive"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
+    "daisyui": "^3.6.4",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}

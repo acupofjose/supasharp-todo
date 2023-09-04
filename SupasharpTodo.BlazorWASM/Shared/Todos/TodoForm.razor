@@ -1,0 +1,103 @@
+@using SupasharpTodo.Shared.Models
+@using SupasharpTodo.Shared.Interfaces
+@using System.Diagnostics
+@inject ITodoService TodoService
+
+<div class="transition-all overflow-hidden duration-500 @(IsEditing ? "max-h-[300px] ease-in" : "max-h-0 ease-out")">
+    <div class="card w-full bg-neutral text-center card-compact py-0 my-2 hover:bg-slate-700 transition-colors">
+        <div class="card-body py-0 w-full flex flex-row">
+            <div class="w-4 mx-1 my-1">
+                <input @bind="IsCompleted" class="checkbox checkbox-sm checkbox-info" type="checkbox"/>
+            </div>
+            <div class="flex-1 pl-2">
+                <div class="form-control w-full">
+                    <input @bind="Title" class="px-4 input input-sm input-bordered w-full bg-transparent focus:bg-slate-600" @onkeydown="OnTitleKeyDown" placeholder="New Todo" @ref="TitleInput" type="text"/>
+                </div>
+                <div class="form-control w-full mt-2" @onfocusout="DescriptionInputFocusOut">
+                    <textarea @bind="Description" class="textarea hover:textarea-bordered h-24 px-4 bg-transparent focus:bg-slate-600" placeholder="Notes"></textarea>
+                </div>
+                <div class="actions flex w-full pt-2">
+                    <div class="flex-1 justify-start text-left">
+                        <button class="btn btn-sm btn-default !px-2 normal-case">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
+                            </svg>
+                            Inbox
+                        </button>
+                    </div>
+                    <div class="btn-group btn-group-horizontal flex-1 justify-end">
+                        <button class="btn btn-sm btn-ghost !px-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/>
+                            </svg>
+                        </button>
+                        <button class="btn btn-sm btn-ghost !px-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public bool IsEditing { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsEditingChanged { get; set; }
+
+    private ElementReference TitleInput { get; set; }
+
+    private bool? IsCompleted { get; set; }
+    private string? Title { get; set; }
+    private string? Description { get; set; }
+
+    public void Focus()
+    {
+        TitleInput.FocusAsync();
+    }
+
+    public void Unfocus()
+    {
+        IsEditing = false;
+        IsEditingChanged.InvokeAsync();
+    }
+
+    private async void DescriptionInputFocusOut(FocusEventArgs obj)
+    {
+        if (await Save())
+            Unfocus();
+    }
+
+    private async void OnTitleKeyDown(KeyboardEventArgs obj)
+    {
+        if (obj.Key != "Enter") return;
+
+        if (await Save())
+            Unfocus();
+    }
+
+    private async Task<bool> Save()
+    {
+        if (string.IsNullOrEmpty(Title))
+            return false;
+
+        var todo = new Todo()
+        {
+            Title = Title,
+            Description = Description,
+        };
+
+        await TodoService.Create(todo);
+
+        Title = null;
+        Description = null;
+        return true;
+    }
+}
