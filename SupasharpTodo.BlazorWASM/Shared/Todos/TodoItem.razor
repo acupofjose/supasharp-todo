@@ -2,7 +2,7 @@
 @using SupasharpTodo.Shared.Interfaces
 @inject ITodoService TodoService
 
-<div class="card w-full bg-neutral text-center card-compact py-0 my-2 hover:bg-slate-700 transition-colors">
+<div class="card w-full bg-base-300 dark:bg-neutral text-center card-compact py-0 my-2 hover:bg-base-500 dark:hover:bg-slate-700 transition-colors">
     <div class="card-body !py-1 w-full flex flex-col">
         <div class="w-full flex flex-row align-middle items-center py-2">
             <div class="w-4">
@@ -22,7 +22,7 @@
             </div>
             <div class="flex-1 ml-4 text-left">
                 <div class="form-control w-full">
-                    <input @ref="TitleInputRef" @bind="Model.Title" type="text" placeholder="New Todo" class="px-4 input input-sm w-full bg-transparent focus:bg-slate-600"/>
+                    <input @ref="TitleInputRef" @bind="Model.Title" type="text" placeholder="New Todo" class="px-4 input input-sm w-full bg-transparent focus:bg-base-400 dark:focus:bg-slate-600"/>
                 </div>
             </div>
             @switch (SelectedView)
