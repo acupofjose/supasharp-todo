@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Supabase.Gotrue;
-using SupasharpTodo.Shared.Models;
 
 namespace SupasharpTodo.Shared.Interfaces
 {

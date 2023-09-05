@@ -1,3 +1,5 @@
+@using SupasharpTodo.Shared.Interfaces
+
 <div class="card w-full bg-base-300 shadow-lg dark:bg-neutral text-center card-compact py-0">
     <div class="card-body py-0">
         <div class="card-title justify-center">
@@ -5,8 +7,15 @@
         </div>
         <div class="card-content">
             <div class="stack mt-4">
-                <GithubLoginButton/>
+                <DynamicComponent Type="@ComponentType"/>
             </div>
         </div>
     </div>
 </div>
+
+@code {
+
+    [Parameter]
+    public Type ComponentType { get; set; }
+
+}

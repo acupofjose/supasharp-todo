@@ -9,6 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupasharpTodo.MauiBlazor", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupasharpTodo.BlazorWASM", "SupasharpTodo.BlazorWASM\SupasharpTodo.BlazorWASM.csproj", "{C05048BD-7C58-44BC-95C8-87A9F29C0FEE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tailwind", "Tailwind", "{F0F96409-B9D7-4485-950F-E04D156BA130}"
+	ProjectSection(SolutionItems) = preProject
+		package.json = package.json
+		tailwind.config.js = tailwind.config.js
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

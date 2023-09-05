@@ -1,7 +1,5 @@
 ﻿@page "/"
 @using SupasharpTodo.Shared.Interfaces
-@using SupasharpTodo.BlazorWASM.Shared.Auth
-@using SupasharpTodo.BlazorWASM.Shared.Todos
 @inject IAppStateService AppState;
 
 <PageTitle>Supa#Todos</PageTitle>
@@ -12,7 +10,7 @@
 }
 else
 {
-    <LoginView/>
+    <LoginView ComponentType="typeof(GithubLoginButton)"/>
 }
 
 @code {

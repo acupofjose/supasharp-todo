@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Supabase.Gotrue.Interfaces;
+﻿using Supabase.Gotrue.Interfaces;
 using Supabase.Gotrue;
 using Newtonsoft.Json;
 using SupasharpTodo.Shared.Interfaces;

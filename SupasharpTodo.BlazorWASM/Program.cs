@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Supabase;
+using Blazored.LocalStorage;
 using SupasharpTodo.BlazorWASM;
 using SupasharpTodo.BlazorWASM.Services;
 using SupasharpTodo.Shared.Services;
-using Blazored.LocalStorage;
 using SupasharpTodo.Shared.Interfaces;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
@@ -35,6 +35,7 @@ builder.Services.AddScoped(provider =>
         SessionHandler = new SupabaseSessionService(localStorageProvider)
     });
 });
+
 builder.Services.AddScoped<IAppStateService>(p => new AppStateService(p.GetRequiredService<Client>()));
 builder.Services.AddScoped<ITodoService>(p =>
     new TodoService(p.GetRequiredService<IAppStateService>(), p.GetRequiredService<Client>()));

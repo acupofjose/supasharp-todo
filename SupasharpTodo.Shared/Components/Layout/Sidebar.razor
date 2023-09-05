@@ -1,3 +1,5 @@
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Web
 @inject NavigationManager NavManager
 @inject IJSRuntime JsRuntime
 
@@ -73,7 +75,7 @@
         JsRuntime.InvokeAsync<object?>("triggerClick", HiddenDrawerButtonRef);
     }
 
-    private async void HandleAddProjectClicked(MouseEventArgs obj)
+    private async void HandleAddProjectClicked()
     {
         IsAddingProject = true;
 
@@ -81,7 +83,7 @@
         ListInputRef?.FocusAsync();
     }
 
-    private void OnProjectInputFocusOut(FocusEventArgs obj)
+    private void OnProjectInputFocusOut()
     {
         IsAddingProject = false;
         ListName = string.Empty;

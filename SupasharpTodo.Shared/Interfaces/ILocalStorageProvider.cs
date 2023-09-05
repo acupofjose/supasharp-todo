@@ -1,5 +1,4 @@
-﻿using System;
-namespace SupasharpTodo.Shared.Interfaces
+﻿namespace SupasharpTodo.Shared.Interfaces
 {
 	public interface ILocalStorageProvider
 	{

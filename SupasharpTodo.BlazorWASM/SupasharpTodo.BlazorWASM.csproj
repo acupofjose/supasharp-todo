@@ -13,7 +13,7 @@
     <ExternalConsole>true</ExternalConsole>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all" />
     <PackageReference Include="supabase-csharp" Version="0.13.1" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
@@ -38,27 +38,28 @@
     <Content Remove="Shared\GithubLoginButton.razor" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="package.json">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Include="package-lock.json">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SupasharpTodo.Shared\SupasharpTodo.Shared.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <RazorComponent Include="Shared\GithubLoginButton.razor" />
-  </ItemGroup>
-  <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css" />
     <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
+    <_ContentIncludedByDefault Remove="Shared\Auth\LoginView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\GithubLoginButton.razor" />
+    <_ContentIncludedByDefault Remove="Shared\KeyboardShortcutList.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Layout\Footer.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Layout\MainLayout.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Layout\Navbar.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Layout\Sidebar.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Todos\TodoForm.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Todos\TodoItem.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Todos\TodoList.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Todos\TodoScaffold.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Todos\TodosHeader.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Todos\TodosView.razor" />
+  </ItemGroup>
+  <ItemGroup>
+    <RazorComponent Include="Shared\GithubLoginButton.razor" />
   </ItemGroup>
 </Project>

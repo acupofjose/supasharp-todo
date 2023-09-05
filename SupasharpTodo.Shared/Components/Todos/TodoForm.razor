@@ -1,6 +1,7 @@
 @using SupasharpTodo.Shared.Models
 @using SupasharpTodo.Shared.Interfaces
 @using System.Diagnostics
+@using Microsoft.AspNetCore.Components.Web
 @inject ITodoService TodoService
 
 <div class="transition-all overflow-hidden duration-500 @(IsEditing ? "max-h-[300px] ease-in" : "max-h-0 ease-out")">
@@ -69,7 +70,7 @@
         IsEditingChanged.InvokeAsync();
     }
 
-    private async void DescriptionInputFocusOut(FocusEventArgs obj)
+    private async void DescriptionInputFocusOut()
     {
         if (await Save())
             Unfocus();

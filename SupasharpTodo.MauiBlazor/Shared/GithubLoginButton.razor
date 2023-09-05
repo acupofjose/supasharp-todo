@@ -16,11 +16,12 @@
             RedirectTo = "supasharptodo://oauth/github/callback"
         });
 
-        WebAuthenticatorResult authResult = await WebAuthenticator.Default.AuthenticateAsync(state.Uri, new Uri("supasharptodo://"));
+        var authResult = await WebAuthenticator.Default.AuthenticateAsync(state.Uri, new Uri("supasharptodo://"));
 
         if (authResult.Properties.TryGetValue("code", out var code))
         {
             await Supabase.Auth.ExchangeCodeForSession(state.PKCEVerifier!, code);
         }
     }
+
 }

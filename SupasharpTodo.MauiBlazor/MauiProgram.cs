@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Supabase;
-using SupasharpTodo.MauiBlazor.Data;
 using SupasharpTodo.MauiBlazor.Services;
+using SupasharpTodo.Shared.Interfaces;
 using SupasharpTodo.Shared.Services;
 
 namespace SupasharpTodo.MauiBlazor;
@@ -17,12 +17,10 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
 
-#if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
+#if DEBUG
         builder.Logging.AddDebug();
 #endif
-
-        builder.Services.AddSingleton<WeatherForecastService>();
 
         // Supabase
         builder.Services.AddSingleton(provider =>
@@ -39,6 +37,10 @@ public static class MauiProgram
                 SessionHandler = new SupabaseSessionService(localStorageProvider)
             });
         });
+        
+        builder.Services.AddScoped<IAppStateService>(p => new AppStateService(p.GetRequiredService<Client>()));
+        builder.Services.AddScoped<ITodoService>(p =>
+            new TodoService(p.GetRequiredService<IAppStateService>(), p.GetRequiredService<Client>()));
 
         var app = builder.Build();
 

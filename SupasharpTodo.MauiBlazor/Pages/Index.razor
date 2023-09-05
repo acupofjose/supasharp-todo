@@ -1,22 +1,23 @@
 ﻿@page "/"
-@using Supabase.Gotrue
-@using Supabase.Gotrue.Interfaces
-@inject Supabase.Client Supabase
+@using SupasharpTodo.Shared.Interfaces
+@inject IAppStateService AppState;
 
-@if (Supabase.Auth.CurrentSession != null)
+<PageTitle>Supa#Todos</PageTitle>
+
+@if (AppState.IsLoggedIn)
 {
-    <AuthInfo />
+    <TodosView/>
 }
 else
 {
-    <GithubLoginButton />
+    <LoginView ComponentType="typeof(GithubLoginButton)"/>
 }
 
-
 @code {
-    protected override void OnInitialized() =>
-        Supabase.Auth.AddStateChangedListener(OnAuthStateChanged);
 
-    private void OnAuthStateChanged(IGotrueClient<User, Session> client, Constants.AuthState state) =>
-        StateHasChanged();
+    protected override void OnInitialized()
+    {
+        AppState.PropertyChanged += (_, _) => StateHasChanged();
+    }
+
 }

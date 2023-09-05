@@ -9,10 +9,27 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
+    <PackageReference Include="Microsoft.JSInterop" Version="7.0.0" />
     <PackageReference Include="supabase-csharp" Version="0.13.1" />
+    <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Services\" />
     <None Remove="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="Components\Auth\LoginView.razor" />
+    <AdditionalFiles Include="Components\KeyboardShortcutList.razor" />
+    <AdditionalFiles Include="Components\Layout\Footer.razor" />
+    <AdditionalFiles Include="Components\Layout\MainLayout.razor" />
+    <AdditionalFiles Include="Components\Layout\Navbar.razor" />
+    <AdditionalFiles Include="Components\Layout\Sidebar.razor" />
+    <AdditionalFiles Include="Components\Todos\TodoForm.razor" />
+    <AdditionalFiles Include="Components\Todos\TodoItem.razor" />
+    <AdditionalFiles Include="Components\Todos\TodoList.razor" />
+    <AdditionalFiles Include="Components\Todos\TodoScaffold.razor" />
+    <AdditionalFiles Include="Components\Todos\TodosHeader.razor" />
+    <AdditionalFiles Include="Components\Todos\TodosView.razor" />
   </ItemGroup>
 </Project>

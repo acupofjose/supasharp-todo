@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Components;
-using Newtonsoft.Json;
 using Postgrest.Exceptions;
 using Supabase.Realtime;
 using Supabase.Realtime.Exceptions;

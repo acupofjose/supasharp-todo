@@ -1,18 +1,17 @@
 ﻿@using Supabase.Gotrue
 @using Blazored.LocalStorage
 @inject Supabase.Client Supabase
-@inject IJSRuntime JS
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavManager
 
 <div class="w-full items-center">
-    <button class="btn btn-accent dark:btn-default" @onclick="HandleButtonClicked">
+    <button class="btn btn-primary dark:btn-default" @onclick="HandleButtonClicked">
         <img class="h-6 w-6" src="/icons/github-white.png"/>
         Login with Github
     </button>
 </div>
 
-@code {
+@code { 
 
     private async void HandleButtonClicked(MouseEventArgs obj)
     {

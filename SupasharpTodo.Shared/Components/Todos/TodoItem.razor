@@ -1,5 +1,6 @@
 @using SupasharpTodo.Shared.Models
 @using SupasharpTodo.Shared.Interfaces
+@using Microsoft.AspNetCore.Components.Web
 @inject ITodoService TodoService
 
 <div class="card w-full bg-base-300 dark:bg-neutral text-center card-compact py-0 my-2 hover:bg-base-500 dark:hover:bg-slate-700 transition-colors">
@@ -92,12 +93,12 @@
         StateHasChanged();
     }
 
-    private async void HandleTrashButtonClicked(MouseEventArgs obj)
+    private async void HandleTrashButtonClicked()
     {
         await TodoService.MoveToTrash(Model);
     }
 
-    private async void HandleDeleteButtonClicked(MouseEventArgs obj)
+    private async void HandleDeleteButtonClicked()
     {
         await TodoService.Delete(Model);
     }
