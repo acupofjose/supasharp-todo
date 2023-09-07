@@ -1,0 +1,27 @@
+/* _content/SupasharpTodo.Shared/Components/Layout/Logo.razor.rz.scp.css */
+svg#logo #text-left[b-ck4kpjmvs7], svg#logo #text-right[b-ck4kpjmvs7] {
+    fill: hsl(var(--pc));
+}
+
+svg#logo #pound[b-ck4kpjmvs7] {
+    animation: color-change-b-ck4kpjmvs7 5s infinite;
+}
+
+@keyframes color-change-b-ck4kpjmvs7 {
+    0% {
+        fill: hsl(var(--su));
+    }
+    25% {
+        fill: hsl(var(--wa));
+    }
+    50% {
+        fill: hsl(var(--in));
+    }
+    75% {
+        fill: hsl(var(--er));
+    }
+    100% {
+        fill: hsl(var(--su));
+    }
+}
+/* _content/SupasharpTodo.Shared/Components/Todos/MiniDatePickerInput.razor.rz.scp.css */

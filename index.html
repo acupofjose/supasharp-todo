@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Supasharp Todo</title>
+    <base href="/"/>
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css">
+    <link href="css/tailwind.css" rel="stylesheet"/>
+    <link href="css/app.css" rel="stylesheet"/>
+    <link href="SupasharpTodo.BlazorWASM.styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png"/>
+</head>
+
+<body>
+<div id="app">
+    <svg class="loading-progress">
+        <circle r="40%" cx="50%" cy="50%"/>
+        <circle r="40%" cx="50%" cy="50%"/>
+    </svg>
+    <div class="loading-progress-text"></div>
+</div>
+
+<div id="blazor-error-ui" class="alert alert-error items-center">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+             class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </a>
+</div>
+<script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+<script src="_framework/blazor.webassembly.js"></script>
+<script src="/scripts/helpers.js"></script>
+</body>
+
+</html>
+
