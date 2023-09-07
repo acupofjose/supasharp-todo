@@ -29,11 +29,11 @@ jobs:
         run: dotnet restore SupasharpTodo.BlazorWASM/SupasharpTodo.BlazorWASM.csproj
 
       - name: Publish .NET Core Project
-        run: dotnet publish SupasharpTodo.BlazorWASM/SupasharpTodo.BlazorWASM.csproj -c release /p:APP_TASKS=prerender -o /out --no-restore
+        run: dotnet publish SupasharpTodo.BlazorWASM/SupasharpTodo.BlazorWASM.csproj -c release /p:APP_TASKS=prerender -o dist/web --no-restore
 
       - name: Commit wwwroot to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: /out/wwwroot
+          FOLDER: dist/web/wwwroot
