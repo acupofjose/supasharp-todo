@@ -25,6 +25,9 @@ jobs:
       - name: Build Node Resources
         run: npm install && npm run build:tailwind:wasm
 
+      - name: Restore Packages
+        run: dotnet restore SupasharpTodo.BlazorWASM/SupasharpTodo.BlazorWASM.csproj
+
       - name: Publish .NET Core Project
         run: dotnet publish SupasharpTodo.BlazorWASM/SupasharpTodo.BlazorWASM.csproj -c release /p:APP_TASKS=prerender -o /out --no-restore
 
