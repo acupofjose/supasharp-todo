@@ -1,17 +1,12 @@
 ﻿@page "/upcoming"
 @using SupasharpTodo.Shared.Interfaces
+@using Microsoft.AspNetCore.Authorization
 @inject IAppStateService AppState;
+@attribute [Authorize]
 
 <PageTitle>Supa#Todos</PageTitle>
 
-@if (AppState.IsLoggedIn)
-{
-    <TodosView SelectedView="TodosView.TodoViewType.Upcoming"/>
-}
-else
-{
-    <LoginView ComponentType="typeof(GithubLoginButton)"/>
-}
+<TodosView SelectedView="TodosView.TodoViewType.Upcoming"/>
 
 @code {
 
@@ -21,4 +16,3 @@ else
     }
 
 }
-

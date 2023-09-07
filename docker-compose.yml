@@ -1,0 +1,7 @@
+version: "3"
+
+services: 
+  supasharp-todo:
+    build: .
+    ports:
+      - "5100:5100"

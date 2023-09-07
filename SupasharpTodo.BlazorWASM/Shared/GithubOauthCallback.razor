@@ -1,0 +1,20 @@
+@using Blazored.LocalStorage
+@using SupasharpTodo.Shared.Extensions
+@inject NavigationManager NavManager
+@inject Supabase.Client Supabase
+@inject ILocalStorageService LocalStorage
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (NavManager.TryGetQueryString<string>("code", out var code) && !string.IsNullOrEmpty(code))
+        {
+            var verifier = await LocalStorage.GetItemAsync<string>("verifier");
+            await Supabase.Auth.ExchangeCodeForSession(verifier, code);
+            await LocalStorage.RemoveItemAsync("verifier");
+            NavManager.NavigateTo("/inbox");
+        }
+    }
+
+}

@@ -1,17 +1,11 @@
 ﻿@page "/trash"
 @using SupasharpTodo.Shared.Interfaces
+@using Microsoft.AspNetCore.Authorization
 @inject IAppStateService AppState;
+@attribute [Authorize]
 
 <PageTitle>Supa#Todos</PageTitle>
-
-@if (AppState.IsLoggedIn)
-{
-    <TodosView SelectedView="TodosView.TodoViewType.Trash"/>
-}
-else
-{
-    <LoginView ComponentType="typeof(GithubLoginButton)"/>
-}
+<TodosView SelectedView="TodosView.TodoViewType.Trash"/>
 
 @code {
 
@@ -19,4 +13,5 @@ else
     {
         AppState.PropertyChanged += (_, _) => StateHasChanged();
     }
+
 }

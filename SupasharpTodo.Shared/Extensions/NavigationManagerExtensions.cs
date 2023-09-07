@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace SupasharpTodo.BlazorWASM.Extensions
+namespace SupasharpTodo.Shared.Extensions
 {
     public static class NavigationManagerExtensions
     {

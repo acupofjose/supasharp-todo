@@ -1,3 +1,4 @@
+@using System.ComponentModel
 @using SupasharpTodo.Shared.Models
 @using SupasharpTodo.Shared.Interfaces
 @using Microsoft.AspNetCore.Components.Web
@@ -21,10 +22,16 @@
                         break;
                 }
             </div>
-            <div class="flex-1 ml-4 text-left">
+            <div class="flex-3 ml-4 text-left">
                 <div class="form-control w-full">
                     <input @ref="TitleInputRef" @bind="Model.Title" type="text" placeholder="New Todo" class="px-4 input input-sm w-full bg-transparent focus:bg-base-400 dark:focus:bg-slate-600"/>
                 </div>
+            </div>
+            <div class="flex flex-1 ml-10 justify-end">
+                @if (Model.DisplayAt != null)
+                {
+                    <MiniDatePickerInput ShowButton="false" Value="@(Model.DisplayAt.Value.ToLocalTime())"></MiniDatePickerInput>
+                }
             </div>
             @switch (SelectedView)
             {
@@ -69,6 +76,17 @@
     private ElementReference TitleInputRef { get; set; }
 
     private bool IsExpanded { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        Model.PropertyChanged += OnModelPropertyChanged;
+    }
+
+    private void OnModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        Console.WriteLine($"Model[{Model.Id}] changed: `{e.PropertyName}`");
+        TodoService.Update(Model);
+    }
 
     public void Focus()
     {

@@ -1,26 +1,27 @@
 @using SupasharpTodo.Shared.Interfaces
 @using System.ComponentModel
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IAppStateService AppState
 @inject Supabase.Client Supabase
-@implements IDisposable
+@inject NavigationManager NavManager
 
 <div class="navbar bg-base-100">
-    @if (AppState.IsLoggedIn)
-    {
-        <div class="w-12">
+    <AuthorizeView>
+        <div class="w-12 md:hidden">
             <label for="drawer" class="btn btn-ghost btn-small drawer-button md:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5"/>
                 </svg>
             </label>
         </div>
-    }
+    </AuthorizeView>
     <div class="flex-1">
-        <a class="btn btn-ghost normal-case text-xl">Supa#Todos</a>
+        <a @onclick="OnLogoClick" class="btn btn-ghost">
+            <Logo/>
+        </a>
     </div>
-    @if (AppState.IsLoggedIn)
-    {
+    <AuthorizeView>
         <div class="flex-1 gap-2 justify-end">
             <div class="dropdown dropdown-end">
                 <label tabindex="0" class="btn btn-ghost btn-circle avatar">
@@ -44,27 +45,19 @@
                 </ul>
             </div>
         </div>
-    }
+    </AuthorizeView>
 </div>
 
 @code {
 
-    protected override void OnInitialized()
+    private void HandleLogout()
     {
-        AppState.PropertyChanged += AppStateOnPropertyChanged;
-    }
-
-    public void Dispose()
-    {
-        AppState.PropertyChanged -= AppStateOnPropertyChanged;
-    }
-
-    private void AppStateOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(AppState.IsLoggedIn))
-            StateHasChanged();
-    }
-
-    private void HandleLogout() =>
         Supabase.Auth.SignOut();
+    }
+
+    private void OnLogoClick()
+    {
+        NavManager.NavigateTo("/");
+    }
+
 }

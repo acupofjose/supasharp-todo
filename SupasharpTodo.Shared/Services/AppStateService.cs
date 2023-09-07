@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Components;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Interfaces;
 using SupasharpTodo.Shared.Interfaces;
-using SupasharpTodo.Shared.Models;
 
 namespace SupasharpTodo.Shared.Services
 {
@@ -12,9 +12,12 @@ namespace SupasharpTodo.Shared.Services
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        private readonly List<IAppStateService.CurrentElementRefChangedHandler> _currentElementRefChangedHandlers =
+            new();
+
         public ObservableCollection<string> Errors { get; } = new();
 
-        public User? User => Supabase.Auth.CurrentUser;
+        public ElementReference? CurrentElementRef { get; private set; }
 
         private bool _isLoading;
 
@@ -32,7 +35,7 @@ namespace SupasharpTodo.Shared.Services
             set => SetField(ref _isLoggedIn, value);
         }
 
-        public ObservableCollection<Todo> Todos { get; } = new();
+        public User? User => Supabase.Auth.CurrentUser;
 
         public string? AvatarUrl
         {
@@ -44,6 +47,44 @@ namespace SupasharpTodo.Shared.Services
                 }
 
                 return null;
+            }
+        }
+
+        public void SetCurrentElementRef(ElementReference? elementReference)
+        {
+            if (elementReference.Equals(CurrentElementRef)) return;
+
+            var oldRef = elementReference;
+            CurrentElementRef = elementReference;
+            NotifyCurrentElementRefChanged(oldRef, CurrentElementRef);
+        }
+
+        public void AddCurrentElementRefChangedHandler(IAppStateService.CurrentElementRefChangedHandler handler)
+        {
+            if (!_currentElementRefChangedHandlers.Contains(handler))
+                _currentElementRefChangedHandlers.Add(handler);
+        }
+
+        public void RemoveCurrentElementRefChangedHandler(IAppStateService.CurrentElementRefChangedHandler handler)
+        {
+            if (_currentElementRefChangedHandlers.Contains(handler))
+                _currentElementRefChangedHandlers.Remove(handler);
+        }
+
+        public void ClearCurrentElementRefChangedHandler() => _currentElementRefChangedHandlers.Clear();
+
+        private void NotifyCurrentElementRefChanged(ElementReference? oldRef, ElementReference? newRef)
+        {
+            foreach (var handler in _currentElementRefChangedHandlers)
+            {
+                try
+                {
+                    handler.Invoke(this, oldRef, newRef);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
         }
 

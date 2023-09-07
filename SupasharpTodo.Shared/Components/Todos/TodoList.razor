@@ -10,21 +10,27 @@
 @switch (SelectedView)
 {
     case TodosView.TodoViewType.Inbox:
-        @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null))
+        @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null && t.DisplayAt == null))
         {
-            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="todo" SelectedView="@SelectedView"/>
+            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo" SelectedView="@SelectedView"/>
+        }
+        break;
+    case TodosView.TodoViewType.Today:
+        @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null && t.DisplayAt != null && t.DisplayAt >= DateTime.Today.ToUniversalTime()))
+        {
+            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo" SelectedView="@SelectedView"/>
         }
         break;
     case TodosView.TodoViewType.Logbook:
         @foreach (var todo in TodoService.Todos.Where(t => t.CompletedAt != null).OrderBy(x => x.CompletedAt))
         {
-            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="todo" SelectedView="@SelectedView"/>
+            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo" SelectedView="@SelectedView"/>
         }
         break;
     case TodosView.TodoViewType.Trash:
         @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt != null))
         {
-            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="todo" SelectedView="@SelectedView"/>
+            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo" SelectedView="@SelectedView"/>
         }
         break;
 }
@@ -34,12 +40,11 @@
     [Parameter]
     public TodosView.TodoViewType SelectedView { get; set; } = TodosView.TodoViewType.Inbox;
 
-    private List<TodoItem> TodoItemRefs = new();
-
+    private List<TodoItem> _todoItemRefs = new();
 
     private TodoItem TodoItemRef
     {
-        set => TodoItemRefs.Add(value);
+        set => _todoItemRefs.Add(value);
     }
 
     private HotKeysContext? _hotkeysContext;
@@ -58,20 +63,20 @@
     private async void OnCtrlDelete(HotKeyEntryByCode obj)
     {
         Console.WriteLine("Ctrl+Delete was pressed.");
-        await TodoService.MoveToTrash(TodoItemRefs[_selectedIndex].Model);
+        await TodoService.MoveToTrash(_todoItemRefs[_selectedIndex].Model);
     }
 
     private void OnArrowUp(HotKeyEntryByCode obj)
     {
-        var nextIndex = _selectedIndex - 1 >= 0 ? _selectedIndex - 1 : TodoItemRefs.Count - 1;
-        TodoItemRefs[nextIndex].Focus();
+        var nextIndex = _selectedIndex - 1 >= 0 ? _selectedIndex - 1 : _todoItemRefs.Count - 1;
+        _todoItemRefs[nextIndex].Focus();
         _selectedIndex = nextIndex;
     }
 
     private void OnArrowDown(HotKeyEntryByCode obj)
     {
-        var nextIndex = _selectedIndex + 1 < TodoItemRefs.Count ? _selectedIndex + 1 : 0;
-        TodoItemRefs[nextIndex].Focus();
+        var nextIndex = _selectedIndex + 1 < _todoItemRefs.Count ? _selectedIndex + 1 : 0;
+        _todoItemRefs[nextIndex].Focus();
         _selectedIndex = nextIndex;
     }
 

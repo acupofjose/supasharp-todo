@@ -1,5 +1,5 @@
 ﻿@using SupasharpTodo.Shared.Interfaces
-@using System.ComponentModel
+@using Microsoft.AspNetCore.Components.Authorization
 @using System.Collections.Specialized
 @inject IAppStateService AppState
 @inherits LayoutComponentBase
@@ -15,26 +15,25 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span>{error}</span>
+                    <span>{@error}</span>
                 </div>
             }
         </div>
     }
     <Navbar/>
-    <div class="drawer md:drawer-open md:mb-2">
+    <div class="drawer md:drawer-open">
         <input id="drawer" type="checkbox" class="drawer-toggle"/>
         <main class="drawer-content min-h-[80vh] w-full">
             <article class="content p-4">
                 @Body
             </article>
         </main>
-        @if (AppState.IsLoggedIn)
-        {
+        <AuthorizeView>
             <div class="drawer-side z-10">
                 <label for="drawer" class="drawer-overlay"></label>
                 <Sidebar/>
             </div>
-        }
+        </AuthorizeView>
     </div>
     <Footer/>
 </div>
@@ -45,7 +44,6 @@
 
     protected override void OnInitialized()
     {
-        AppState.PropertyChanged += AppStateOnPropertyChanged;
         AppState.Errors.CollectionChanged += ErrorsOnCollectionChanged;
     }
 
@@ -58,13 +56,7 @@
 
     public void Dispose()
     {
-        AppState.PropertyChanged -= AppStateOnPropertyChanged;
-    }
-
-    private void AppStateOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(AppState.IsLoggedIn))
-            StateHasChanged();
+        AppState.Errors.CollectionChanged -= ErrorsOnCollectionChanged;
     }
 
 }

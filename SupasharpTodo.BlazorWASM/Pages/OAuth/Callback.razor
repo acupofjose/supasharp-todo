@@ -1,20 +1,3 @@
 ﻿@page "/oauth/callback"
-@using Blazored.LocalStorage
-@using SupasharpTodo.BlazorWASM.Extensions
-@inject NavigationManager NavManager
-@inject Supabase.Client Supabase
-@inject ILocalStorageService LocalStorage
 
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        if (NavManager.TryGetQueryString<string>("code", out var code))
-        {
-            var verifier = await LocalStorage.GetItemAsync<string>("verifier");
-            var session = await Supabase.Auth.ExchangeCodeForSession(verifier, code);
-            await LocalStorage.RemoveItemAsync("verifier");
-            NavManager.NavigateTo("/");
-        }
-    }
-}
-
+<GithubOauthCallback/>

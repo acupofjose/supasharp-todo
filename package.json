@@ -2,6 +2,7 @@
   "name": "supasharp-todo",
   "version": "1.0.0",
   "scripts": {
+    "build:tailwind:wasm": "npx tailwindcss -i ./SupasharpTodo.BlazorWASM/Styles/tailwind.css -o ./SupasharpTodo.BlazorWASM/wwwroot/css/tailwind.css",
     "dev:wasm": "concurrently \"npm run dev:dotnet:wasm\" \"npm run dev:tailwind:wasm\"",
     "dev:tailwind": "concurrently \"npm run dev:tailwind:wasm\" \"npm run dev:tailwind:maui\" ",
     "dev:tailwind:wasm": "npx tailwindcss -i ./SupasharpTodo.BlazorWASM/Styles/tailwind.css -o ./SupasharpTodo.BlazorWASM/wwwroot/css/tailwind.css -w",

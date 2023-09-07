@@ -18,7 +18,7 @@
         var state = await Supabase.Auth.SignIn(Constants.Provider.Github, new SignInOptions
         {
             FlowType = Constants.OAuthFlowType.PKCE,
-            RedirectTo = "http://localhost:5100/oauth/callback"
+            RedirectTo = $"{NavManager.BaseUri}oauth/callback"
         });
 
         await LocalStorage.SetItemAsync("verifier", state.PKCEVerifier);

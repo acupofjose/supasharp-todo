@@ -1,17 +1,11 @@
 ﻿@page "/"
 @using SupasharpTodo.Shared.Interfaces
+@using Microsoft.AspNetCore.Authorization
 @inject IAppStateService AppState;
+@attribute [Authorize]
 
 <PageTitle>Supa#Todos</PageTitle>
-
-@if (AppState.IsLoggedIn)
-{
-    <TodosView/>
-}
-else
-{
-    <LoginView ComponentType="typeof(GithubLoginButton)"/>
-}
+<TodosView/>
 
 @code {
 

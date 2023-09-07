@@ -8,12 +8,13 @@ using Supabase.Realtime.Interfaces;
 using Supabase.Realtime.PostgresChanges;
 using SupasharpTodo.Shared.Interfaces;
 using SupasharpTodo.Shared.Models;
+using SupasharpTodo.Shared.Utilities;
 
 namespace SupasharpTodo.Shared.Services;
 
 public class TodoService : ITodoService
 {
-    public ObservableCollection<Todo> Todos { get; set; } = new();
+    public FullyObservableCollection<Todo> Todos { get; set; } = new();
 
     private bool _isLoading;
 
@@ -99,7 +100,22 @@ public class TodoService : ITodoService
             OnPropertyChanged(nameof(Todos));
             return true;
         }
-        catch (Exception ex)
+        catch (PostgrestException ex)
+        {
+            AppStateService.Errors.Add(ex.Message);
+            return false;
+        }
+    }
+
+    public async Task<bool> Update(Todo todo)
+    {
+        try
+        {
+            await todo.Update<Todo>();
+            OnPropertyChanged(nameof(Todos));
+            return true;
+        }
+        catch (PostgrestException ex)
         {
             AppStateService.Errors.Add(ex.Message);
             return false;
@@ -123,8 +139,6 @@ public class TodoService : ITodoService
 
     private void AppStateServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(IAppStateService.IsLoggedIn)) return;
-
         if (AppStateService.IsLoggedIn)
             Register();
         else

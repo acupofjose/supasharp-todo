@@ -2,7 +2,11 @@
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
-    content: ['./**/*.{razor,html}'],
+    content: [
+        './SupasharpTodo.BlazorWASM/Pages/**/*.{razor,html}',
+        './SupasharpTodo.BlazorWASM/Shared/**/*.{razor,html}',
+        './SupasharpTodo.Shared/Components/**/*.{razor,html}',
+    ],
     theme: {
         extend: {},
     },

@@ -1,0 +1,25 @@
+svg#logo #text-left, svg#logo #text-right {
+    fill: hsl(var(--pc));
+}
+
+svg#logo #pound {
+    animation: color-change 5s infinite;
+}
+
+@keyframes color-change {
+    0% {
+        fill: hsl(var(--su));
+    }
+    25% {
+        fill: hsl(var(--wa));
+    }
+    50% {
+        fill: hsl(var(--in));
+    }
+    75% {
+        fill: hsl(var(--er));
+    }
+    100% {
+        fill: hsl(var(--su));
+    }
+}

@@ -1,0 +1,104 @@
+@using Radzen.Blazor
+
+@if (ShowButton)
+{
+    <div class="form-control">
+        <label class="input-group input-group-sm">
+            <button class="btn btn-square !h-8 !w-8 !min-h-0 disabled">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"/>
+                </svg>
+            </button>
+            <RadzenDatePicker
+                @bind-Value="@Value"
+                Disabled="@Disabled"
+                DateFormat="MMM d"
+                ShowTime="false"
+                ShowSeconds="false"
+                ShowButton="false"
+                Placeholder="For Date"
+                InputClass="input input-bordered !w-full !h-8 !p-0 !text-xs !bg-transparent !text-current !border-none !rounded-r-lg"
+                Min="DateTime.Today"
+                ParseInput="@ParseDate"/>
+        </label>
+    </div>
+}
+else
+{
+    <div class="badge badge-warning">
+        <div class="form-control">
+            <RadzenDatePicker
+                @bind-Value="@Value"
+                Disabled="@Disabled"
+                DateFormat="MMM d"
+                ShowTime="false"
+                ShowSeconds="false"
+                ShowButton="false"
+                Placeholder="For Date"
+                InputClass="input input-bordered !w-full !h-8 !px-1 !text-xs !bg-transparent !text-current !border-none !rounded-lg !text-center"
+                Min="DateTime.Today"
+                ParseInput="@ParseDate"/>
+        </div>
+    </div>
+}
+
+
+@code
+{
+    private DateTime? _value;
+
+    [Parameter]
+    public bool ShowButton { get; set; } = true;
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public DateTime? Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<DateTime?> ValueChanged { get; set; }
+
+    private DateTime? ParseDate(string input)
+    {
+        string[] formats =
+        {
+            "MM-dd-yyyy",
+            "MM/dd/yyyy",
+            "MM/d/yyyy",
+            "MM-d-yy",
+            "MM-dd-yy",
+            "MM/d/yy",
+            "MM/dd/yy",
+            "MMddyyyy",
+            "MMddyy",
+            "MM-dd",
+            "MM/dd",
+            "MMdd",
+            "MMM d",
+            "MMM dd"
+        };
+
+        if (input.ToLower() == "today")
+            return DateTime.Today;
+
+        if (input.ToLower() == "tomorrow")
+            return DateTime.Today.AddDays(1);
+
+        foreach (var format in formats)
+            if (DateTime.TryParseExact(input, format, null, System.Globalization.DateTimeStyles.None, out var result))
+                return result;
+
+        return null;
+    }
+}

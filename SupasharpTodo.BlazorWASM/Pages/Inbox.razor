@@ -1,17 +1,11 @@
 @page "/inbox"
 @using SupasharpTodo.Shared.Interfaces
+@using Microsoft.AspNetCore.Authorization
 @inject IAppStateService AppState;
+@attribute [Authorize]
 
 <PageTitle>Supa#Todos</PageTitle>
-
-@if (AppState.IsLoggedIn)
-{
-    <TodosView SelectedView="TodosView.TodoViewType.Inbox"/>
-}
-else
-{
-    <LoginView ComponentType="typeof(GithubLoginButton)"/>
-}
+<TodosView SelectedView="TodosView.TodoViewType.Inbox"/>
 
 @code {
 
@@ -21,4 +15,3 @@ else
     }
 
 }
-
