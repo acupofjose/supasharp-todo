@@ -8,6 +8,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -31,9 +34,10 @@ jobs:
       - name: Publish .NET Core Project
         run: dotnet publish SupasharpTodo.BlazorWASM/SupasharpTodo.BlazorWASM.csproj -c release /p:APP_TASKS=prerender -o dist/web --no-restore
 
-      - name: Commit wwwroot to GitHub Pages
+      - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: dist/web/wwwroot
+          CLEAN: true
