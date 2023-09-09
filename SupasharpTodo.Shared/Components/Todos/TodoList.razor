@@ -98,7 +98,7 @@
                 Todos = TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null && t.DisplayAt != null && t.DisplayAt >= DateTime.Today.ToUniversalTime()).ToList();
                 break;
             case TodosView.TodoViewType.Logbook:
-                Todos = TodoService.Todos.Where(t => t.CompletedAt != null).OrderBy(x => x.CompletedAt).ToList();
+                Todos = TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt != null).OrderBy(x => x.CompletedAt).ToList();
                 break;
             case TodosView.TodoViewType.Trash:
                 Todos = TodoService.Todos.Where(t => t.TrashedAt != null).ToList();

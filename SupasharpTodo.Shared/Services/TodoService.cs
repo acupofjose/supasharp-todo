@@ -13,7 +13,7 @@ using SupasharpTodo.Shared.Utilities;
 
 namespace SupasharpTodo.Shared.Services;
 
-public class TodoService : ITodoService
+public sealed class TodoService : ITodoService
 {
     public FullyObservableCollection<Todo> Todos { get; set; } = new();
 
@@ -80,7 +80,7 @@ public class TodoService : ITodoService
         try
         {
             todo.CompletedAt = isCompleted ? DateTime.UtcNow : null;
-            await todo.Update<Todo>();
+            await Supabase.From<Todo>().Update(todo);
             return true;
         }
         catch (Exception ex)
@@ -112,7 +112,7 @@ public class TodoService : ITodoService
         try
         {
             todo.TrashedAt = null;
-            await todo.Update<Todo>();
+            await Supabase.From<Todo>().Insert(todo);
             return true;
         }
         catch (PostgrestException ex)
@@ -127,7 +127,7 @@ public class TodoService : ITodoService
         try
         {
             todo.TrashedAt = DateTime.UtcNow;
-            await todo.Update<Todo>();
+            await Supabase.From<Todo>().Insert(todo);
             return true;
         }
         catch (PostgrestException ex)
@@ -236,12 +236,12 @@ public class TodoService : ITodoService
         }
     }
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;

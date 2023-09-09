@@ -2,6 +2,7 @@
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
+    darkMode: 'class',
     content: [
         './SupasharpTodo.BlazorWASM/Pages/**/*.{razor,html}',
         './SupasharpTodo.BlazorWASM/Shared/**/*.{razor,html}',
