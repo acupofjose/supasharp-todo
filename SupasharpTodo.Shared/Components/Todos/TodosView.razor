@@ -4,9 +4,11 @@
 <div class="block mx-auto max-w-md w-full">
     @if (!TodoService.IsLoading)
     {
-        <TodosHeader SelectedView="@SelectedView"/>
-        <TodoList SelectedView="@SelectedView"/>
-        <KeyboardShortcutList/>
+        <CascadingValue Value="@SelectedView">
+            <TodosHeader/>
+            <TodoList/>
+            <KeyboardShortcutList/>
+        </CascadingValue>
     }
     else
     {
@@ -35,4 +37,3 @@
     }
 
 }
-

@@ -2,9 +2,11 @@
 @using System.ComponentModel
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Authorization
-@inject IAppStateService AppState
+@using Toolbelt.Blazor.HotKeys2
+@inject IAppStateService AppStateService
 @inject Supabase.Client Supabase
 @inject NavigationManager NavManager
+@inject HotKeys HotKeys
 
 <div class="navbar bg-base-100">
     <AuthorizeView>
@@ -26,9 +28,9 @@
             <div class="dropdown dropdown-end">
                 <label tabindex="0" class="btn btn-ghost btn-circle avatar">
                     <div class="w-10 border-2 border-slate-500 rounded-full hover:border-accent transition ease-in-out">
-                        @if (!string.IsNullOrEmpty(AppState.AvatarUrl))
+                        @if (!string.IsNullOrEmpty(AppStateService.AvatarUrl))
                         {
-                            <img src="@AppState.AvatarUrl" class="w-6 h-6"/>
+                            <img src="@AppStateService.AvatarUrl" class="w-6 h-6"/>
                         }
                         else
                         {

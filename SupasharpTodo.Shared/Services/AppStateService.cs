@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Components;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Interfaces;
 using SupasharpTodo.Shared.Interfaces;
@@ -12,12 +11,12 @@ namespace SupasharpTodo.Shared.Services
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private readonly List<IAppStateService.CurrentElementRefChangedHandler> _currentElementRefChangedHandlers =
-            new();
+        public IAppStateService.AppSection FocusedAppSection { get; private set; } =
+            IAppStateService.AppSection.TodoList;
+
+        private List<IAppStateService.FocusedAppSectionChanged> _focusedAppSectionChangedListeners = new();
 
         public ObservableCollection<string> Errors { get; } = new();
-
-        public ElementReference? CurrentElementRef { get; private set; }
 
         private bool _isLoading;
 
@@ -50,42 +49,36 @@ namespace SupasharpTodo.Shared.Services
             }
         }
 
-        public void SetCurrentElementRef(ElementReference? elementReference)
+        public void AddFocusedAppSectionChangedListener(IAppStateService.FocusedAppSectionChanged listener)
         {
-            if (elementReference.Equals(CurrentElementRef)) return;
-
-            var oldRef = elementReference;
-            CurrentElementRef = elementReference;
-            NotifyCurrentElementRefChanged(oldRef, CurrentElementRef);
+            if (!_focusedAppSectionChangedListeners.Contains(listener))
+                _focusedAppSectionChangedListeners.Add(listener);
         }
 
-        public void AddCurrentElementRefChangedHandler(IAppStateService.CurrentElementRefChangedHandler handler)
+        public void RemoveFocusedAppSectionChangedListener(IAppStateService.FocusedAppSectionChanged listener)
         {
-            if (!_currentElementRefChangedHandlers.Contains(handler))
-                _currentElementRefChangedHandlers.Add(handler);
+            if (_focusedAppSectionChangedListeners.Contains(listener))
+                _focusedAppSectionChangedListeners.Remove(listener);
         }
 
-        public void RemoveCurrentElementRefChangedHandler(IAppStateService.CurrentElementRefChangedHandler handler)
+        public void ClearFocusedAppSectionChangedListeners(IAppStateService.FocusedAppSectionChanged listener) =>
+            _focusedAppSectionChangedListeners.Clear();
+
+        public void SetFocusedAppSection(IAppStateService.AppSection gainedFocus)
         {
-            if (_currentElementRefChangedHandlers.Contains(handler))
-                _currentElementRefChangedHandlers.Remove(handler);
+            var lostFocus = FocusedAppSection;
+            FocusedAppSection = gainedFocus;
+
+            NotifyFocusedAppSectionChanged(lostFocus, gainedFocus);
         }
 
-        public void ClearCurrentElementRefChangedHandler() => _currentElementRefChangedHandlers.Clear();
-
-        private void NotifyCurrentElementRefChanged(ElementReference? oldRef, ElementReference? newRef)
+        private void NotifyFocusedAppSectionChanged(IAppStateService.AppSection lostFocus,
+            IAppStateService.AppSection gainedFocus)
         {
-            foreach (var handler in _currentElementRefChangedHandlers)
-            {
-                try
-                {
-                    handler.Invoke(this, oldRef, newRef);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
+            if (lostFocus == gainedFocus) return;
+
+            foreach (var listener in _focusedAppSectionChangedListeners.ToList())
+                listener.Invoke(lostFocus, gainedFocus);
         }
 
         private Supabase.Client Supabase { get; }

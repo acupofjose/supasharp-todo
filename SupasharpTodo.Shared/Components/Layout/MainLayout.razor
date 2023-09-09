@@ -1,21 +1,23 @@
 ﻿@using SupasharpTodo.Shared.Interfaces
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Collections.Specialized
+@using Toolbelt.Blazor.HotKeys2
 @inject IAppStateService AppState
+@inject HotKeys HotKeys
 @inherits LayoutComponentBase
 @implements IDisposable
 
 <div class="page relative">
     @if (Errors.Count > 0)
     {
-        <div class="absolute top-1 right-1">
+        <div class="absolute top-1 right-1 z-20">
             @foreach (var error in Errors)
             {
-                <div class="alert alert-error animate-in slide-in-from-right-1 duration-500">
+                <div class="alert alert-error animate-in slide-in-from-right-1 duration-500 mb-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span>{@error}</span>
+                    <span>@error</span>
                 </div>
             }
         </div>
@@ -42,21 +44,53 @@
 
     private List<string> Errors { get; } = new();
 
+    HotKeysContext? _hotkeysContext;
+
     protected override void OnInitialized()
     {
         AppState.Errors.CollectionChanged += ErrorsOnCollectionChanged;
-    }
-
-    private void ErrorsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.NewItems != null)
-            foreach (var item in e.NewItems)
-                Errors.Add(item.ToString()!);
+        _hotkeysContext = HotKeys.CreateContext()
+            .Add(Code.M, OnMPressed, exclude: Exclude.Default)
+            .Add(Code.ArrowLeft, OnArrowLeftPressed, exclude: Exclude.Default)
+            .Add(Code.ArrowRight, OnArrowRightPressed, exclude: Exclude.Default);
     }
 
     public void Dispose()
     {
         AppState.Errors.CollectionChanged -= ErrorsOnCollectionChanged;
+        _hotkeysContext?.Dispose();
+    }
+
+    private async void ErrorsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems == null) return;
+
+        foreach (var item in e.NewItems)
+            Errors.Add(item.ToString()!);
+
+        StateHasChanged();
+
+        await Task.Delay(5000);
+
+        foreach (var item in e.NewItems)
+            Errors.Remove(item.ToString()!);
+
+        StateHasChanged();
+    }
+
+    private void OnMPressed()
+    {
+        AppState.SetFocusedAppSection(IAppStateService.AppSection.Menu);
+    }
+
+    private void OnArrowLeftPressed()
+    {
+        AppState.SetFocusedAppSection(IAppStateService.AppSection.Menu);
+    }
+
+    private void OnArrowRightPressed()
+    {
+        AppState.SetFocusedAppSection(IAppStateService.AppSection.TodoList);
     }
 
 }

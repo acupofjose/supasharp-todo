@@ -3,102 +3,238 @@
 @using System.ComponentModel
 @using SupasharpTodo.Shared.Interfaces
 @using Toolbelt.Blazor.HotKeys2
+@inject IAppStateService AppStateService
 @inject ITodoService TodoService
 @inject HotKeys HotKeys
 @implements IDisposable
 
-@switch (SelectedView)
-{
-    case TodosView.TodoViewType.Inbox:
-        @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null && t.DisplayAt == null))
+<div class="relative w-full">
+    @if (Todos.Count > 0)
+    {
+        @foreach (var todo in Todos)
         {
-            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo" SelectedView="@SelectedView"/>
+            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo"/>
         }
-        break;
-    case TodosView.TodoViewType.Today:
-        @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null && t.DisplayAt != null && t.DisplayAt >= DateTime.Today.ToUniversalTime()))
-        {
-            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo" SelectedView="@SelectedView"/>
-        }
-        break;
-    case TodosView.TodoViewType.Logbook:
-        @foreach (var todo in TodoService.Todos.Where(t => t.CompletedAt != null).OrderBy(x => x.CompletedAt))
-        {
-            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo" SelectedView="@SelectedView"/>
-        }
-        break;
-    case TodosView.TodoViewType.Trash:
-        @foreach (var todo in TodoService.Todos.Where(t => t.TrashedAt != null))
-        {
-            <TodoItem @key="@todo.Id" @ref="TodoItemRef" Model="@todo" SelectedView="@SelectedView"/>
-        }
-        break;
-}
+    }
+    else
+    {
+        <div class="card w-full transition-all bg-base-300 dark:bg-neutral text-center card-compact py-0 my-2 hover:bg-base-500 dark:hover:bg-slate-700 border-2 border-transparent animate-in slide-in-from-bottom-0.5">
+            <div class="card-body py-4 w-full">
+                <div class="form-control w-full pl-4 text-center">
+                    <p class="prose prose-sm select-none">Looks like we're done for today!</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
 
-    [Parameter]
+    [CascadingParameter]
     public TodosView.TodoViewType SelectedView { get; set; } = TodosView.TodoViewType.Inbox;
 
     private List<TodoItem> _todoItemRefs = new();
 
     private TodoItem TodoItemRef
     {
-        set => _todoItemRefs.Add(value);
+        set
+        {
+            _todoItemRefs.Add(value);
+            value.TodoSelected += OnTodoSelected;
+        }
+    }
+
+    private List<Todo> Todos { get; set; } = new();
+    private TodoItem? _selectedTodo;
+
+    private void OnTodoSelected(TodoItem item)
+    {
+        _selectedTodo?.Contract();
+        _selectedTodo = item;
     }
 
     private HotKeysContext? _hotkeysContext;
-    private int _selectedIndex = -1;
+    private int _highlightedIndex = -1;
 
     protected override void OnInitialized()
     {
-        TodoService.PropertyChanged += TodoServiceOnPropertyChanged;
         TodoService.Todos.CollectionChanged += TodosOnCollectionChanged;
-        _hotkeysContext = HotKeys.CreateContext()
-            .Add(Code.ArrowDown, OnArrowDown, exclude: Exclude.TextArea)
-            .Add(Code.ArrowUp, OnArrowUp, exclude: Exclude.TextArea)
-            .Add(ModCode.Ctrl, Code.Delete, OnCtrlDelete, exclude: Exclude.TextArea);
-    }
-
-    private async void OnCtrlDelete(HotKeyEntryByCode obj)
-    {
-        Console.WriteLine("Ctrl+Delete was pressed.");
-        await TodoService.MoveToTrash(_todoItemRefs[_selectedIndex].Model);
-    }
-
-    private void OnArrowUp(HotKeyEntryByCode obj)
-    {
-        var nextIndex = _selectedIndex - 1 >= 0 ? _selectedIndex - 1 : _todoItemRefs.Count - 1;
-        _todoItemRefs[nextIndex].Focus();
-        _selectedIndex = nextIndex;
-    }
-
-    private void OnArrowDown(HotKeyEntryByCode obj)
-    {
-        var nextIndex = _selectedIndex + 1 < _todoItemRefs.Count ? _selectedIndex + 1 : 0;
-        _todoItemRefs[nextIndex].Focus();
-        _selectedIndex = nextIndex;
+        SetTodosForSelectedView();
+        RegisterHotkeys();
     }
 
     public void Dispose()
     {
-        Console.WriteLine("Todolist has disposed.");
-        TodoService.PropertyChanged -= TodoServiceOnPropertyChanged;
         TodoService.Todos.CollectionChanged -= TodosOnCollectionChanged;
         _hotkeysContext?.Dispose();
     }
 
-    private void TodosOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void RegisterHotkeys()
     {
-        Console.WriteLine("Collection has changed.");
+        _hotkeysContext?.Dispose();
+        _hotkeysContext = HotKeys.CreateContext()
+            .Add(Code.ArrowDown, OnArrowDown, exclude: Exclude.TextArea)
+            .Add(Code.ArrowUp, OnArrowUp, exclude: Exclude.TextArea)
+            .Add(Code.ArrowLeft, OnArrowLeft, exclude: Exclude.Default)
+            .Add(Code.Escape, OnEscapePressed, exclude: Exclude.None)
+            .Add(Code.Space, OnSpacePressed, exclude: Exclude.Default)
+            .Add(Code.Enter, OnEnterPressed, exclude: Exclude.Default)
+            .Add(Code.Delete, OnDeletePressed, exclude: Exclude.Default)
+            .Add(Code.Backspace, OnDeletePressed, exclude: Exclude.Default)
+            .Add(ModCode.Alt, Code.K, OnAltKPressed, exclude: Exclude.Default)
+            .Add(ModCode.Shift, Code.D, OnShiftD, exclude: Exclude.Default)
+            .Add(ModCode.Alt | ModCode.Shift, Code.D, OnAltShiftD, exclude: Exclude.Default)
+            .Add(Code.Tab, OnTabPressed, exclude: Exclude.Default);
+    }
+
+    private void SetTodosForSelectedView()
+    {
+        switch (SelectedView)
+        {
+            case TodosView.TodoViewType.Inbox:
+                Todos = TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null && t.DisplayAt == null).ToList();
+                break;
+            case TodosView.TodoViewType.Today:
+                Todos = TodoService.Todos.Where(t => t.TrashedAt == null && t.CompletedAt == null && t.DisplayAt != null && t.DisplayAt >= DateTime.Today.ToUniversalTime()).ToList();
+                break;
+            case TodosView.TodoViewType.Logbook:
+                Todos = TodoService.Todos.Where(t => t.CompletedAt != null).OrderBy(x => x.CompletedAt).ToList();
+                break;
+            case TodosView.TodoViewType.Trash:
+                Todos = TodoService.Todos.Where(t => t.TrashedAt != null).ToList();
+                break;
+        }
+
         StateHasChanged();
     }
 
-    private void TodoServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void TodosOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        Console.WriteLine($"Property `{e.PropertyName}` has changed.");
-        if (e.PropertyName == nameof(TodoService.Todos))
-            StateHasChanged();
+        SetTodosForSelectedView();
     }
+
+    #region Keyboard Event Handlers
+
+    private void OnArrowUp(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList || Todos.Count == 0)
+            return;
+
+        var nextIndex = _highlightedIndex - 1 >= 0 ? _highlightedIndex - 1 : _todoItemRefs.Count - 1;
+
+        if (_highlightedIndex > -1)
+            _todoItemRefs[_highlightedIndex].Unhighlight().Contract();
+
+        _todoItemRefs[nextIndex].Highlight();
+        _highlightedIndex = nextIndex;
+    }
+
+    private void OnArrowDown(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList || Todos.Count == 0)
+            return;
+
+        var nextIndex = _highlightedIndex + 1 < _todoItemRefs.Count ? _highlightedIndex + 1 : 0;
+
+        if (_highlightedIndex > -1)
+            _todoItemRefs[_highlightedIndex].Unhighlight().Contract();
+
+        _todoItemRefs[nextIndex].Highlight();
+        _highlightedIndex = nextIndex;
+    }
+
+    private void OnArrowLeft(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList)
+            return;
+
+        AppStateService.SetFocusedAppSection(IAppStateService.AppSection.Menu);
+    }
+
+    private void OnEscapePressed(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList)
+            return;
+
+        _selectedTodo?.Contract();
+    }
+
+    private void OnSpacePressed(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList)
+            return;
+
+        if (_highlightedIndex == -1) return;
+
+        var item = _todoItemRefs[_highlightedIndex];
+        _selectedTodo = item;
+
+        if (item.IsExpanded)
+            item.Contract();
+        else
+            item.Expand();
+    }
+
+    private void OnEnterPressed(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList)
+            return;
+
+        if (_highlightedIndex == -1) return;
+
+        var item = _todoItemRefs[_highlightedIndex];
+        _selectedTodo = item;
+
+        if (!item.IsExpanded)
+            item.Expand();
+    }
+
+    private void OnDeletePressed(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList)
+            return;
+
+        if (_highlightedIndex == -1) return;
+
+        var item = _todoItemRefs[_highlightedIndex];
+        _selectedTodo = item;
+
+        TodoService.MoveToTrash(_selectedTodo.Model);
+    }
+
+    private void OnTabPressed(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList)
+            return;
+
+        _selectedTodo?.Focus();
+    }
+
+    private async void OnAltKPressed()
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList || _highlightedIndex == -1)
+            return;
+
+        var item = _todoItemRefs[_highlightedIndex];
+        _selectedTodo = item;
+
+        await TodoService.MarkCompletion(_selectedTodo.Model, !_selectedTodo.Model.CompletedAt.HasValue);
+    }
+
+    private async void OnShiftD(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList || _highlightedIndex == -1)
+            return;
+
+        await TodoService.Duplicate(_todoItemRefs[_highlightedIndex].Model);
+    }
+
+    private void OnAltShiftD(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.TodoList || _highlightedIndex == -1)
+            return;
+    }
+
+    #endregion
 
 }

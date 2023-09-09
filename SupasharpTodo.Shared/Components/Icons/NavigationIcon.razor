@@ -1,0 +1,32 @@
+@implements SupasharpTodo.Shared.Interfaces.INavigationIcon
+@inject NavigationManager NavManager
+
+<label class="@(!string.IsNullOrEmpty(Location) && NavManager.Uri.Contains(Location.Trim('/')) ? "active" : "")">
+    <CascadingValue Value="@IconClasses">
+        <DynamicComponent Type="@IconComponent"></DynamicComponent>
+    </CascadingValue>
+
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <p class="@TextClasses">@Title</p>
+    }
+</label>
+
+@code {
+
+    [Parameter]
+    public Type IconComponent { get; set; } = typeof(InboxIcon);
+
+    [Parameter]
+    public string Location { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; } = "Inbox";
+
+    [Parameter]
+    public string? IconClasses { get; set; }
+
+    [Parameter]
+    public string? TextClasses { get; set; }
+
+}

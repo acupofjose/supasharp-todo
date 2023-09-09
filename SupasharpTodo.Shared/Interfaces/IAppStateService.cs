@@ -7,10 +7,7 @@ namespace SupasharpTodo.Shared.Interfaces
 {
     public interface IAppStateService : INotifyPropertyChanged
     {
-        ElementReference? CurrentElementRef { get; }
-
-        delegate void CurrentElementRefChangedHandler(IAppStateService service, ElementReference? oldRef,
-            ElementReference? newRef);
+        #region General Properties
 
         ObservableCollection<string> Errors { get; }
         bool IsLoading { get; }
@@ -18,9 +15,26 @@ namespace SupasharpTodo.Shared.Interfaces
         bool IsLoggedIn { get; }
         string? AvatarUrl { get; }
 
-        void SetCurrentElementRef(ElementReference? elementReference);
-        void AddCurrentElementRefChangedHandler(CurrentElementRefChangedHandler handler);
-        void RemoveCurrentElementRefChangedHandler(CurrentElementRefChangedHandler handler);
-        void ClearCurrentElementRefChangedHandler();
+        #endregion
+
+
+        #region App Section Focus Changed
+
+        enum AppSection
+        {
+            Menu,
+            TodoList
+        }
+
+        AppSection FocusedAppSection { get; }
+
+        delegate void FocusedAppSectionChanged(AppSection lostFocus, AppSection gainedFocus);
+
+        void AddFocusedAppSectionChangedListener(FocusedAppSectionChanged listener);
+        void RemoveFocusedAppSectionChangedListener(FocusedAppSectionChanged listener);
+        void ClearFocusedAppSectionChangedListeners(FocusedAppSectionChanged listener);
+        void SetFocusedAppSection(AppSection gainedFocus);
+
+        #endregion
     }
 }

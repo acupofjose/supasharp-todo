@@ -1,50 +1,22 @@
+@using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Components.Web
+@using SupasharpTodo.Shared.Interfaces
+@using SupasharpTodo.Shared.Components.Icons
+@using SupasharpTodo.Shared.Models
+@using Toolbelt.Blazor.HotKeys2
+@inject IAppStateService AppStateService
 @inject NavigationManager NavManager
+@inject HotKeys HotKeys
 @inject IJSRuntime JsRuntime
 
-<ul class="menu p-4 w-60 md:mb-2 py-6 min-h-full bg-base-200 text-base-content rounded-r-large relative text-xl">
-    <li @onclick="GoToInbox">
-        <label>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 stroke-accent">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M7.875 14.25l1.214 1.942a2.25 2.25 0 001.908 1.058h2.006c.776 0 1.497-.4 1.908-1.058l1.214-1.942M2.41 9h4.636a2.25 2.25 0 011.872 1.002l.164.246a2.25 2.25 0 001.872 1.002h2.092a2.25 2.25 0 001.872-1.002l.164-.246A2.25 2.25 0 0116.954 9h4.636M2.41 9a2.25 2.25 0 00-.16.832V12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 12V9.832c0-.287-.055-.57-.16-.832M2.41 9a2.25 2.25 0 01.382-.632l3.285-3.832a2.25 2.25 0 011.708-.786h8.43c.657 0 1.281.287 1.709.786l3.284 3.832c.163.19.291.404.382.632M4.5 20.25h15A2.25 2.25 0 0021.75 18v-2.625c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125V18a2.25 2.25 0 002.25 2.25z"/>
-            </svg>
-            <p>Inbox</p>
-        </label>
-    </li>
-    <li @onclick="GoToToday">
-        <label>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 stroke-warning">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/>
-            </svg>
-            <p>Today</p>
-        </label>
-    </li>
-    <li @onclick="GoToUpcoming">
-        <label>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 stroke-red-500">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"/>
-            </svg>
-            <p>Upcoming</p>
-        </label>
-    </li>
-    <div class="my-4"></div>
-    <li @onclick="GoToLogbook">
-        <label>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 stroke-green-500">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-            </svg>
-            <p>Logbook</p>
-        </label>
-    </li>
-    <li @onclick="GoToTrash">
-        <label>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 stroke-gray-300">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-            </svg>
-            <p>Trash</p>
-        </label>
-    </li>
+<ul class="menu p-4 w-60 md:mb-2 py-6 h-full bg-base-200 text-base-content rounded-r-lg relative text-xl">
+    @foreach (var item in _navigationItems)
+    {
+        <li @onclick="() => item.OnClick?.Invoke(item.Location)" class="border-2 rounded-lg @(item.IsHighlighted ? "border-indigo-500/75" : "border-transparent")">
+            <NavigationIcon Title="@item.Title" Location="@item.Location" IconComponent="@item.IconType" IconClasses="@item.IconClasses"></NavigationIcon>
+        </li>
+    }
     <li class="absolute bottom-1 left-0 w-full">
         @if (IsAddingProject)
         {
@@ -55,27 +27,68 @@
         else
         {
             <div class="px-2 w-full flex">
-                <button @onclick="HandleAddProjectClicked" class="btn btn-sm btn-default normal-case mx-1 flex-1">Create New List</button>
+                <button @onclick="OnAddProjectClicked" class="btn btn-sm btn-default normal-case mx-1 flex-1">Create New List</button>
             </div>
         }
     </li>
 </ul>
 
-<label @ref="HiddenDrawerButtonRef" id="programmatic-drawer-button" for="drawer" class="hidden drawer-button"/>
+<label @ref="HiddenDrawerButtonRef" id="programmatic-drawer-button" for="drawer" class="hidden drawer-button"></label>
 
 @code
 {
+    private List<NavigationItem> _navigationItems = new();
+
+    private int CurrentNavigationItemIndex => _navigationItems.FindIndex(i => NavManager.Uri.Contains(i.Location.Trim('/')));
+    private int _highlightedIndex = -1;
+
+    private HotKeysContext? _hotkeysContext;
+
     private ElementReference? HiddenDrawerButtonRef { get; set; }
     private ElementReference? ListInputRef { get; set; }
+
     private bool IsAddingProject { get; set; } = false;
     private string? ListName { get; set; }
 
-    public void Toggle()
+    protected override void OnInitialized()
     {
-        JsRuntime.InvokeAsync<object?>("triggerClick", HiddenDrawerButtonRef);
+        NavManager.LocationChanged += NavManagerOnLocationChanged;
+        AppStateService.AddFocusedAppSectionChangedListener(OnFocusedAppSectionChanged);
+
+        _navigationItems = new List<NavigationItem>
+        {
+            new("Inbox", "/inbox", typeof(InboxIcon), "w-4 h-4 stroke-accent", GoToNavigationItem),
+            new("Today", "/today", typeof(TodayIcon), "w-4 h-4 stroke-warning", GoToNavigationItem),
+            new("Upcoming", "/upcoming", typeof(UpcomingIcon), "w-4 h-4 stroke-red-500", GoToNavigationItem),
+            new("Logbook", "/logbook", typeof(LogbookIcon), "w-4 h-4 stroke-green-500", GoToNavigationItem),
+            new("Trash", "/trash", typeof(TrashIcon), "w-4 h-4 stroke-gray-300", GoToNavigationItem),
+        };
+
+        RegisterHotkeys();
     }
 
-    private async void HandleAddProjectClicked()
+    public void Dispose()
+    {
+        _hotkeysContext?.Dispose();
+    }
+
+    private void NavManagerOnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        ClearHighlights();
+    }
+
+    private void Toggle() =>
+        JsRuntime.InvokeAsync<object?>("triggerClick", HiddenDrawerButtonRef);
+
+    private void ClearHighlights()
+    {
+        foreach (var item in _navigationItems)
+            item.IsHighlighted = false;
+
+        StateHasChanged();
+    }
+
+    private async void OnAddProjectClicked()
     {
         IsAddingProject = true;
 
@@ -89,33 +102,87 @@
         ListName = string.Empty;
     }
 
-    private void GoToInbox()
+    private void OnFocusedAppSectionChanged(IAppStateService.AppSection lostfocus, IAppStateService.AppSection gainedfocus)
     {
-        NavManager.NavigateTo("/inbox");
+        if (gainedfocus != IAppStateService.AppSection.Menu) return;
+
+        _navigationItems[CurrentNavigationItemIndex].IsHighlighted = true;
+        StateHasChanged();
+    }
+
+    private void GoToNavigationItem(string location)
+    {
+        NavManager.NavigateTo(location);
         Toggle();
     }
 
-    private void GoToToday()
+    #region Keyboard Input Handlers
+
+    private void RegisterHotkeys()
     {
-        NavManager.NavigateTo("/today");
-        Toggle();
+        _hotkeysContext = HotKeys.CreateContext()
+            .Add(Code.ArrowDown, OnArrowDown, exclude: Exclude.Default)
+            .Add(Code.ArrowUp, OnArrowUp, exclude: Exclude.Default)
+            .Add(Code.ArrowRight, OnArrowRight, exclude: Exclude.Default)
+            .Add(Code.Escape, OnEscapePressed, exclude: Exclude.Default)
+            .Add(Code.Enter, OnEnterPressed, exclude: Exclude.Default);
     }
 
-    private void GoToUpcoming()
+    private void OnArrowUp(HotKeyEntryByCode obj)
     {
-        NavManager.NavigateTo("/upcoming");
-        Toggle();
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.Menu)
+            return;
+
+        var currentIndex = _highlightedIndex == -1 ? CurrentNavigationItemIndex : _highlightedIndex;
+        _highlightedIndex = currentIndex - 1 >= 0 ? currentIndex - 1 : _navigationItems.Count - 1;
+
+        ClearHighlights();
+
+        _navigationItems[_highlightedIndex].IsHighlighted = true;
+        StateHasChanged();
     }
 
-    private void GoToLogbook()
+    private void OnArrowDown(HotKeyEntryByCode obj)
     {
-        NavManager.NavigateTo("/logbook");
-        Toggle();
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.Menu)
+            return;
+
+        var currentIndex = _highlightedIndex == -1 ? CurrentNavigationItemIndex : _highlightedIndex;
+        _highlightedIndex = currentIndex + 1 < _navigationItems.Count ? currentIndex + 1 : 0;
+
+        ClearHighlights();
+
+        _navigationItems[_highlightedIndex].IsHighlighted = true;
+        StateHasChanged();
     }
 
-    private void GoToTrash()
+    private void OnArrowRight(HotKeyEntryByCode obj)
     {
-        NavManager.NavigateTo("/trash");
-        Toggle();
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.Menu)
+            return;
+
+        ClearHighlights();
+        AppStateService.SetFocusedAppSection(IAppStateService.AppSection.TodoList);
     }
+
+    private void OnEnterPressed(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.Menu)
+            return;
+
+        if (_highlightedIndex == -1) return;
+
+        NavManager.NavigateTo(_navigationItems[_highlightedIndex].Location);
+    }
+
+    private void OnEscapePressed(HotKeyEntryByCode obj)
+    {
+        if (AppStateService.FocusedAppSection != IAppStateService.AppSection.Menu)
+            return;
+
+        ClearHighlights();
+        AppStateService.SetFocusedAppSection(IAppStateService.AppSection.TodoList);
+    }
+
+    #endregion
 }

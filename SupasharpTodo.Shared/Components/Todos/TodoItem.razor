@@ -4,10 +4,10 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject ITodoService TodoService
 
-<div class="card w-full bg-base-300 dark:bg-neutral text-center card-compact py-0 my-2 hover:bg-base-500 dark:hover:bg-slate-700 transition-colors">
+<div class="card w-full animate-in slide-in-from-bottom-0.5 transition-all bg-base-300 dark:bg-neutral text-center card-compact py-0 my-2 hover:bg-base-500 dark:hover:bg-slate-700 @(IsExpanded || IsHighlighted ? "border-2 border-indigo-500/75" : "border-2 border-transparent")" @ref="TodoCard">
     <div class="card-body !py-1 w-full flex flex-col">
-        <div class="w-full flex flex-row align-middle items-center py-2">
-            <div class="w-4">
+        <div class="w-full flex flex-row items-center py-2">
+            <div class="flex @(IsExpanded ? "self-start pt-1" : "") w-4">
                 @switch (SelectedView)
                 {
                     case TodosView.TodoViewType.Trash:
@@ -22,40 +22,54 @@
                         break;
                 }
             </div>
-            <div class="flex-3 ml-4 text-left">
-                <div class="form-control w-full">
-                    <input @ref="TitleInputRef" @bind="Model.Title" type="text" placeholder="New Todo" class="px-4 input input-sm w-full bg-transparent focus:bg-base-400 dark:focus:bg-slate-600"/>
-                </div>
-            </div>
-            <div class="flex flex-1 ml-10 justify-end">
-                @if (Model.DisplayAt != null)
+            <div @onclick="OnItemClicked" class="flex-1 ml-4 text-left">
+                @if (IsExpanded)
                 {
-                    <MiniDatePickerInput ShowButton="false" Value="@(Model.DisplayAt.Value.ToLocalTime())"></MiniDatePickerInput>
+                    <div class="form-control w-full">
+                        <input @ref="TitleInputRef" @bind="Model.Title" type="text" placeholder="New Todo" class="px-4 input input-sm w-full bg-transparent focus:bg-base-400 dark:focus:bg-slate-600"/>
+                    </div>
+                    <div class="form-control w-full mt-2">
+                        <textarea @bind="@Model.Description" class="textarea hover:textarea-bordered h-24 px-4 bg-transparent focus:bg-base-400 dark:focus:bg-slate-600" placeholder="Notes"></textarea>
+                    </div>
+                    <div class="actions flex w-full pt-2">
+                        <div class="flex-1 justify-start text-left">
+                            <MiniDatePickerInput @bind-Value="@Model.DisplayAt"/>
+                        </div>
+                        <div class="btn-group btn-group-horizontal flex-1 justify-end">
+                            <button class="btn btn-sm btn-ghost !px-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/>
+                                </svg>
+                            </button>
+                            <button class="btn btn-sm btn-ghost !px-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-control w-full pl-4">
+                        <p class="prose prose-sm select-none">@Model.Title</p>
+                    </div>
                 }
             </div>
             @switch (SelectedView)
             {
-                case TodosView.TodoViewType.Logbook:
-                    <div class="flex-1 justify-end">
-                        <div class="w-full text-right">
-                            <div class="badge badge-default">@Model.CompletedAt.Value.ToLocalTime()</div>
-                        </div>
-                    </div>
-                    break;
                 case TodosView.TodoViewType.Trash:
-                    <div class="w-12 justify-end">
-                        <button @onclick="HandleDeleteButtonClicked" type="button" class="btn btn-sm btn-ghost hover:btn-danger">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 stroke-red-500">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <div class="flex @(IsExpanded ? "self-start" : "") w-12 justify-end">
+                        <button @onclick="OnDeleteButtonClicked" type="button" class="btn btn-sm btn-ghost hover:btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 stroke-current">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/>
                             </svg>
                         </button>
-                    </div>
-                    break;
-                default:
-                    <div class="w-12 justify-end">
-                        <button @onclick="HandleTrashButtonClicked" type="button" class="btn btn-sm btn-ghost hover:btn-error">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 scale-75">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+
+                        <button @onclick="OnDeleteButtonClicked" type="button" class="btn btn-sm btn-ghost hover:btn-danger">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 stroke-red-500">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </button>
                     </div>
@@ -67,15 +81,21 @@
 
 @code {
 
+    public delegate void TodoSelectedHandler(TodoItem item);
+
     [Parameter]
     public Todo Model { get; set; }
 
-    [Parameter]
+    [CascadingParameter]
     public TodosView.TodoViewType SelectedView { get; set; } = TodosView.TodoViewType.Inbox;
 
-    private ElementReference TitleInputRef { get; set; }
+    private ElementReference TodoCard { get; set; }
+    private ElementReference? TitleInputRef { get; set; }
 
-    private bool IsExpanded { get; set; } = true;
+    public event TodoSelectedHandler? TodoSelected;
+
+    public bool IsExpanded { get; private set; }
+    public bool IsHighlighted { get; private set; }
 
     protected override void OnInitialized()
     {
@@ -84,23 +104,50 @@
 
     private void OnModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        Console.WriteLine($"Model[{Model.Id}] changed: `{e.PropertyName}`");
         TodoService.Update(Model);
     }
 
-    public void Focus()
+    private void OnItemClicked()
     {
-        TitleInputRef.FocusAsync();
+        if (IsExpanded) return;
+
+        TodoSelected?.Invoke(this);
+        Expand();
+        Focus();
     }
 
-    public void Expand()
+    public TodoItem Focus()
+    {
+        TitleInputRef?.FocusAsync();
+        return this;
+    }
+
+    public TodoItem Highlight()
+    {
+        IsHighlighted = true;
+        StateHasChanged();
+        return this;
+    }
+
+    public TodoItem Unhighlight()
+    {
+        IsHighlighted = false;
+        StateHasChanged();
+        return this;
+    }
+
+    public TodoItem Expand()
     {
         IsExpanded = true;
+        StateHasChanged();
+        return this;
     }
 
-    public void Compact()
+    public TodoItem Contract()
     {
         IsExpanded = false;
+        StateHasChanged();
+        return this;
     }
 
     private async void OnCheckboxChanged(ChangeEventArgs obj)
@@ -111,12 +158,17 @@
         StateHasChanged();
     }
 
-    private async void HandleTrashButtonClicked()
+    private async void OnRestoreButtonClicked()
+    {
+        await TodoService.Restore(Model);
+    }
+
+    private async void OnTrashButtonClicked()
     {
         await TodoService.MoveToTrash(Model);
     }
 
-    private async void HandleDeleteButtonClicked()
+    private async void OnDeleteButtonClicked()
     {
         await TodoService.Delete(Model);
     }

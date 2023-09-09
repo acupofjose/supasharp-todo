@@ -11,6 +11,8 @@ public interface ITodoService : INotifyPropertyChanged
     FullyObservableCollection<Todo> Todos { get; set; }
     Task<bool> Create(Todo todo);
     Task<bool> MoveToTrash(Todo todo);
+    Task<bool> Restore(Todo todo);
+    Task<bool> Duplicate(Todo todo);
     Task<bool> MarkCompletion(Todo todo, bool isCompleted);
     Task<bool> Delete(Todo todo);
     Task<bool> Update(Todo todo);

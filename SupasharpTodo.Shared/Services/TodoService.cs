@@ -6,6 +6,7 @@ using Supabase.Realtime;
 using Supabase.Realtime.Exceptions;
 using Supabase.Realtime.Interfaces;
 using Supabase.Realtime.PostgresChanges;
+using SupasharpTodo.Shared.Extensions;
 using SupasharpTodo.Shared.Interfaces;
 using SupasharpTodo.Shared.Models;
 using SupasharpTodo.Shared.Utilities;
@@ -55,6 +56,7 @@ public class TodoService : ITodoService
             try
             {
                 await Supabase.From<Todo>().Insert(todo);
+                return true;
             }
             catch (PostgrestException ex)
             {
@@ -63,8 +65,6 @@ public class TodoService : ITodoService
                 AppStateService.Errors.Add(ex.Message);
                 return false;
             }
-            OnPropertyChanged(nameof(Todos));
-            return true;
         }
         catch (Exception ex)
         {
@@ -81,10 +81,41 @@ public class TodoService : ITodoService
         {
             todo.CompletedAt = isCompleted ? DateTime.UtcNow : null;
             await todo.Update<Todo>();
-            OnPropertyChanged(nameof(Todos));
             return true;
         }
         catch (Exception ex)
+        {
+            AppStateService.Errors.Add(ex.Message);
+            return false;
+        }
+    }
+    
+    public async Task<bool> Duplicate(Todo todo)
+    {
+        try
+        {
+            var duplicatedTodo = todo.DeepCopy();
+            todo.Id = string.Empty;
+            todo.UpdatedAt = DateTime.UtcNow;
+            await Supabase.From<Todo>().Insert(duplicatedTodo);
+            return true;
+        }
+        catch (PostgrestException ex)
+        {
+            AppStateService.Errors.Add(ex.Message);
+            return false;
+        }
+    }
+
+    public async Task<bool> Restore(Todo todo)
+    {
+        try
+        {
+            todo.TrashedAt = null;
+            await todo.Update<Todo>();
+            return true;
+        }
+        catch (PostgrestException ex)
         {
             AppStateService.Errors.Add(ex.Message);
             return false;
@@ -97,7 +128,6 @@ public class TodoService : ITodoService
         {
             todo.TrashedAt = DateTime.UtcNow;
             await todo.Update<Todo>();
-            OnPropertyChanged(nameof(Todos));
             return true;
         }
         catch (PostgrestException ex)
@@ -111,8 +141,7 @@ public class TodoService : ITodoService
     {
         try
         {
-            await todo.Update<Todo>();
-            OnPropertyChanged(nameof(Todos));
+            await Supabase.From<Todo>().Update(todo);
             return true;
         }
         catch (PostgrestException ex)
@@ -126,8 +155,8 @@ public class TodoService : ITodoService
     {
         try
         {
-            await todo.Delete<Todo>();
-            OnPropertyChanged(nameof(Todos));
+            await Supabase.From<Todo>().Delete(todo);
+            Todos.Remove(todo);
             return true;
         }
         catch (Exception ex)
@@ -153,7 +182,7 @@ public class TodoService : ITodoService
 
         try
         {
-            Listener = await Supabase.From<Todo>().On(PostgresChangesOptions.ListenType.All, OnTodoModelChanges);
+            Listener ??= await Supabase.From<Todo>().On(PostgresChangesOptions.ListenType.All, OnTodoModelChanges);
         }
         catch (RealtimeException ex)
         {
@@ -179,12 +208,8 @@ public class TodoService : ITodoService
 
     private void Unregister()
     {
-        if (Listener != null)
-        {
-            Listener.Unsubscribe();
-            Listener = null;
-        }
-
+        Listener?.Unsubscribe();
+        Listener = null;
         Todos.Clear();
     }
 
@@ -192,16 +217,19 @@ public class TodoService : ITodoService
     {
         var model = change.Model<Todo>();
 
-        switch (change.Event)
+        switch (change.Payload?.Data?._type)
         {
-            case Constants.EventType.Insert:
+            case "INSERT":
+                Console.WriteLine($"Todo has been inserted: {model.Id}");
                 Todos.Add(model);
                 break;
-            case Constants.EventType.Update:
+            case "UPDATE":
+                Console.WriteLine($"Todo has been updated: {model.Id}");
                 var toBeUpdated = Todos.FirstOrDefault(t => t.Id == model!.Id);
                 Todos[Todos.IndexOf(toBeUpdated)] = model;
                 break;
-            case Constants.EventType.Delete:
+            case "DELETE":
+                Console.WriteLine($"Todo has been deleted: {model.Id}");
                 var toBeRemoved = Todos.FirstOrDefault(t => t.Id == model!.Id);
                 Todos.Remove(toBeRemoved);
                 break;

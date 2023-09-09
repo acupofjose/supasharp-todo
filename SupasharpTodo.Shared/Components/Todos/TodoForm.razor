@@ -45,6 +45,9 @@
     public bool IsEditing { get; set; }
 
     [Parameter]
+    public TodosView.TodoViewType SelectedView { get; set; } = TodosView.TodoViewType.Inbox;
+
+    [Parameter]
     public EventCallback<bool> IsEditingChanged { get; set; }
 
     private ElementReference TitleInput { get; set; }
@@ -55,6 +58,16 @@
     private string? Title { get; set; }
     private string? Description { get; set; }
     private DateTime? DisplayAt { get; set; }
+
+    protected override void OnInitialized()
+    {
+        switch (SelectedView)
+        {
+            case TodosView.TodoViewType.Today:
+                DisplayAt = DateTime.Today;
+                break;
+        }
+    }
 
     public void Focus()
     {
@@ -97,7 +110,7 @@
         return true;
     }
 
-    private void HandleClickDueBy()
+    private void OnClickDueBy()
     {
         IsEditingDueBy = true;
     }
