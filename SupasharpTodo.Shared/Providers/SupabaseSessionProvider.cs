@@ -1,11 +1,11 @@
-﻿using Supabase.Gotrue.Interfaces;
+﻿using Newtonsoft.Json;
 using Supabase.Gotrue;
-using Newtonsoft.Json;
+using Supabase.Gotrue.Interfaces;
 using SupasharpTodo.Shared.Interfaces;
 
-namespace SupasharpTodo.Shared.Services
+namespace SupasharpTodo.Shared.Providers
 {
-    public class SupabaseSessionService : IGotrueSessionPersistence<Session>
+    public class SupabaseSessionProvider : IGotrueSessionPersistence<Session>
     {
         private const string CacheKey = ".gotrue.cache";
 
@@ -14,7 +14,7 @@ namespace SupasharpTodo.Shared.Services
         public void DestroySession() =>
             _localStorageProvider.RemoveItem(CacheKey);
 
-        public SupabaseSessionService(ILocalStorageProvider localStorageProvider)
+        public SupabaseSessionProvider(ILocalStorageProvider localStorageProvider)
         {
             _localStorageProvider = localStorageProvider;
         }

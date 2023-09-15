@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
             {
                 AutoRefreshToken = true,
                 AutoConnectRealtime = true,
-                SessionHandler = new SupabaseSessionService(localStorageProvider!)
+                SessionHandler = new SupabaseSessionProvider(localStorageProvider!)
             });
         });
 

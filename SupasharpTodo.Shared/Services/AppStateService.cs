@@ -89,9 +89,7 @@ namespace SupasharpTodo.Shared.Services
             Supabase.Auth.AddStateChangedListener(AuthEventHandler);
 
             if (Supabase.Auth.CurrentUser != null)
-            {
                 IsLoggedIn = true;
-            }
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

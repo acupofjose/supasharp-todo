@@ -2,6 +2,7 @@
 using Supabase;
 using SupasharpTodo.MauiBlazor.Services;
 using SupasharpTodo.Shared.Interfaces;
+using SupasharpTodo.Shared.Providers;
 using SupasharpTodo.Shared.Services;
 
 namespace SupasharpTodo.MauiBlazor;
@@ -34,7 +35,7 @@ public static class MauiProgram
             {
                 AutoRefreshToken = true,
                 AutoConnectRealtime = true,
-                SessionHandler = new SupabaseSessionService(localStorageProvider)
+                SessionHandler = new SupabaseSessionProvider(localStorageProvider)
             });
         });
         
