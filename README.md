@@ -2,9 +2,15 @@
   <img width="300" src=".github/logo.gif"/>
 </p>
 
-**A Blazor WASM implementation of a Things3 inspired todo list showcasing Supabase C# features.**
+<p align="center"><strong>A Blazor WASM implementation of a Things3 inspired todo list showcasing Supabase C# features.</strong></p>
+
+<p align="center">
+  <img width="800" src=".github/current-state.gif"/>
+</p>
 
 A [live version of this project](https://todo.acupofjose.com) is hosted through Github Pages.
+
+---
 
 ## Current Project State
 
