@@ -4,6 +4,8 @@
 
 **A Blazor WASM implementation of a Things3 inspired todo list showcasing Supabase C# features.**
 
+A [live version of this project](https://todo.acupofjose.com) is hosted through Github Pages.
+
 ## Current Project State
 
 - [x] Authentication using 3rd Party Providers (Github)
