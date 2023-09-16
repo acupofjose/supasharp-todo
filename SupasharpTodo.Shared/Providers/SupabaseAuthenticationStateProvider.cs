@@ -5,12 +5,19 @@ using Supabase.Gotrue.Interfaces;
 
 namespace SupasharpTodo.Shared.Providers;
 
+/// <summary>
+/// Creates a link between <see cref="Supabase"/> and <see cref="AuthenticatedState"/> to provide support for using
+/// Gotrue with Blazor's built in Authentication handler.
+/// </summary>
 public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
 {
     private Supabase.Client Supabase { get; }
 
     private AuthenticationState AnonymousState => new(new ClaimsPrincipal(new ClaimsIdentity()));
 
+    /// <summary>
+    /// Creates an <see cref="AuthenticationState"/> that is either Anonymous or Authenticated if Gotrue has a current user.
+    /// </summary>
     private AuthenticationState AuthenticatedState
     {
         get
@@ -43,6 +50,11 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
         Supabase.Auth.RemoveStateChangedListener(SupabaseAuthStateChanged);
     }
 
+    /// <summary>
+    /// Adds a listener on the supabase client that will notify components of a change in authentication state in realtime.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="state"></param>
     private void SupabaseAuthStateChanged(IGotrueClient<User, Session> sender, Constants.AuthState state)
     {
         switch (state)

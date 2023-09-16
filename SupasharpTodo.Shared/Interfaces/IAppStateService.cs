@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Microsoft.AspNetCore.Components;
 using Supabase.Gotrue;
 
 namespace SupasharpTodo.Shared.Interfaces

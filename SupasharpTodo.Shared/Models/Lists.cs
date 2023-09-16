@@ -2,6 +2,9 @@ using Postgrest.Attributes;
 
 namespace SupasharpTodo.Shared.Models;
 
+/// <summary>
+/// Represents an individual list that is compatible with Supabase persistence.
+/// </summary>
 [Table("lists")]
 public class Lists
 {

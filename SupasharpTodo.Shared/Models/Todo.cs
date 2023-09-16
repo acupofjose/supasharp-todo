@@ -5,8 +5,11 @@ using Postgrest.Attributes;
 
 namespace SupasharpTodo.Shared.Models;
 
+/// <summary>
+/// Represents an individual Todo that is compatible with Supabase persistence.
+/// </summary>
 [Table("todos")]
-public class Todo : Postgrest.Models.BaseModel, INotifyPropertyChanged
+public sealed class Todo : Postgrest.Models.BaseModel, INotifyPropertyChanged
 {
     private string _title;
     private string? _description;
@@ -73,12 +76,12 @@ public class Todo : Postgrest.Models.BaseModel, INotifyPropertyChanged
     [Column("updated_at")] public DateTime UpdatedAt { get; set; }
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;

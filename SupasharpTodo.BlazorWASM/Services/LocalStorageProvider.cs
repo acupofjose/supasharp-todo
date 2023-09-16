@@ -15,12 +15,12 @@ namespace SupasharpTodo.BlazorWASM.Services
         public string GetItem(string key) =>
             StorageService.GetItem<string>(key);
 
-
         public void RemoveItem(string key) =>
             StorageService.RemoveItem(key);
 
         public void SetItem(string key, string value) =>
             StorageService.SetItem(key, value);
+
+        public void Empty() => StorageService.Clear();
     }
 }
-

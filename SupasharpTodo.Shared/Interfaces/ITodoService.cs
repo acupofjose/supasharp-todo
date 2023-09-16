@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using SupasharpTodo.Shared.Models;
 using SupasharpTodo.Shared.Utilities;

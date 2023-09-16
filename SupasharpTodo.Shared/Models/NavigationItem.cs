@@ -1,5 +1,8 @@
 namespace SupasharpTodo.Shared.Models;
 
+/// <summary>
+/// Represents a Navigation Item for Menus
+/// </summary>
 public class NavigationItem
 {
     public delegate void OnClickHandler(string location);

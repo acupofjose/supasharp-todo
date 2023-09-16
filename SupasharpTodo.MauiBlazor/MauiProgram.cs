@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Logging;
 using Supabase;
 using SupasharpTodo.MauiBlazor.Services;
+using SupasharpTodo.Shared.Extensions;
 using SupasharpTodo.Shared.Interfaces;
 using SupasharpTodo.Shared.Providers;
 using SupasharpTodo.Shared.Services;
@@ -24,24 +26,8 @@ public static class MauiProgram
 #endif
 
         // Supabase
-        builder.Services.AddSingleton(provider =>
-        {
-            var url = "https://ohthynqufdglbdtoplcb.supabase.co";
-            var publicKey =
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9odGh5bnF1ZmRnbGJkdG9wbGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTM1Njk5NDYsImV4cCI6MjAwOTE0NTk0Nn0.YxuyLRaAivc2sUEJQ0JLSv0MoTIvu_-9CnBFU8fhnrI";
-
-            var localStorageProvider = new LocalStorageProvider();
-            return new Client(url, publicKey, new SupabaseOptions
-            {
-                AutoRefreshToken = true,
-                AutoConnectRealtime = true,
-                SessionHandler = new SupabaseSessionProvider(localStorageProvider)
-            });
-        });
-        
-        builder.Services.AddScoped<IAppStateService>(p => new AppStateService(p.GetRequiredService<Client>()));
-        builder.Services.AddScoped<ITodoService>(p =>
-            new TodoService(p.GetRequiredService<IAppStateService>(), p.GetRequiredService<Client>()));
+        builder.Services.AddScoped<ILocalStorageProvider, LocalStorageProvider>();
+        builder.Services.AddSupasharpTodoSharedCore();
 
         var app = builder.Build();
 
@@ -51,7 +37,6 @@ public static class MauiProgram
             await supabase.InitializeAsync();
             supabase.Auth.LoadSession();
         });
-
         return app;
     }
 }

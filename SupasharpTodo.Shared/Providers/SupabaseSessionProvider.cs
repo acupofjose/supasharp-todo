@@ -5,6 +5,9 @@ using SupasharpTodo.Shared.Interfaces;
 
 namespace SupasharpTodo.Shared.Providers
 {
+    /// <summary>
+    /// This Session Provider supplies a strategy for caching/destroying a session provided by Gotrue, locally for the user.
+    /// </summary>
     public class SupabaseSessionProvider : IGotrueSessionPersistence<Session>
     {
         private const string CacheKey = ".gotrue.cache";

@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Supasharp Todo</title>
     <base href="/"/>
+    <link href="manifest.json" rel="manifest" />
+    <link rel="icon" type="image/png" href="favicon.png"/>
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css">
     <link href="css/tailwind.css" rel="stylesheet"/>
     <link href="css/app.css" rel="stylesheet"/>
     <link href="SupasharpTodo.BlazorWASM.styles.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="favicon.png"/>
 </head>
 
 <body>
@@ -55,6 +57,7 @@
     }(window.location))
 </script>
 <script src="_framework/blazor.webassembly.js"></script>
+<script>navigator.serviceWorker.register('service-worker.js');</script>
 <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
 <script src="/scripts/helpers.js"></script>
 <script defer data-domain="todo.acupofjose.com" src="https://ping.acupofjose.com/js/script.js"></script>

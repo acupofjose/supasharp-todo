@@ -1,66 +1,70 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' ">
-    <ExternalConsole>true</ExternalConsole>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' ">
-    <ExternalConsole>true</ExternalConsole>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all" />
-    <PackageReference Include="Radzen.Blazor" Version="4.15.10" />
-    <PackageReference Include="supabase-csharp" Version="0.13.3" />
-    <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="3.0.0" />
-  </ItemGroup>
+    <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' ">
+        <ExternalConsole>true</ExternalConsole>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' ">
+        <ExternalConsole>true</ExternalConsole>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all"/>
+        <PackageReference Include="Radzen.Blazor" Version="4.15.10"/>
+        <PackageReference Include="supabase-csharp" Version="0.13.3"/>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.4.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0"/>
+        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="3.0.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Services\" />
-    <None Remove="Styles\" />
-    <None Remove="Pages\OAuth\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Styles\" />
-    <Folder Include="Pages\OAuth\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="wwwroot\icons\" />
-    <Content Remove="package.json" />
-    <Content Remove="package-lock.json" />
-    <Content Remove="Shared\AuthInfo.razor" />
-    <Content Remove="Shared\GithubLoginButton.razor" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SupasharpTodo.Shared\SupasharpTodo.Shared.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
-    <_ContentIncludedByDefault Remove="Shared\Auth\LoginView.razor" />
-    <_ContentIncludedByDefault Remove="Shared\GithubLoginButton.razor" />
-    <_ContentIncludedByDefault Remove="Shared\KeyboardShortcutList.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Layout\Footer.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Layout\MainLayout.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Layout\Navbar.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Layout\Sidebar.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Todos\TodoForm.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Todos\TodoItem.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Todos\TodoList.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Todos\TodoScaffold.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Todos\TodosHeader.razor" />
-    <_ContentIncludedByDefault Remove="Shared\Todos\TodosView.razor" />
-  </ItemGroup>
-  <ItemGroup>
-    <RazorComponent Include="Shared\GithubLoginButton.razor" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="Services\"/>
+        <None Remove="Styles\"/>
+        <None Remove="Pages\OAuth\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Styles\"/>
+        <Folder Include="Pages\OAuth\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="wwwroot\icons\"/>
+        <Content Remove="package.json"/>
+        <Content Remove="package-lock.json"/>
+        <Content Remove="Shared\AuthInfo.razor"/>
+        <Content Remove="Shared\GithubLoginButton.razor"/>
+        <ServiceWorker Include="wwwroot\service-worker.js"
+                       PublishedContent="wwwroot\service-worker.published.js"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SupasharpTodo.Shared\SupasharpTodo.Shared.csproj">
+            <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css"/>
+        <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map"/>
+        <_ContentIncludedByDefault Remove="Shared\Auth\LoginView.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\GithubLoginButton.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\KeyboardShortcutList.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Layout\Footer.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Layout\MainLayout.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Layout\Navbar.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Layout\Sidebar.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Todos\TodoForm.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Todos\TodoItem.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Todos\TodoList.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Todos\TodoScaffold.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Todos\TodosHeader.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\Todos\TodosView.razor"/>
+        <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
+    </ItemGroup>
+    <ItemGroup>
+        <RazorComponent Include="Shared\GithubLoginButton.razor"/>
+    </ItemGroup>
 </Project>

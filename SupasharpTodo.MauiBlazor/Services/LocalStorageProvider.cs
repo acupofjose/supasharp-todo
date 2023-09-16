@@ -15,6 +15,8 @@ namespace SupasharpTodo.MauiBlazor.Services
 
         public void SetItem(string key, string value) =>
             Instance.SetAsync(key, value);
+
+        public void Empty() => Instance.RemoveAll();
     }
 }
 

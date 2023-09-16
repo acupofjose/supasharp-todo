@@ -7,19 +7,32 @@ using SupasharpTodo.Shared.Interfaces;
 
 namespace SupasharpTodo.Shared.Services
 {
+    /// <summary>
+    /// Represents the Global App State
+    /// </summary>
     public sealed class AppStateService : IAppStateService
     {
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// Sets the Focused App Section to scope keyboard shortcuts appropriately.
+        /// </summary>
         public IAppStateService.AppSection FocusedAppSection { get; private set; } =
             IAppStateService.AppSection.TodoList;
 
-        private List<IAppStateService.FocusedAppSectionChanged> _focusedAppSectionChangedListeners = new();
+        private readonly List<IAppStateService.FocusedAppSectionChanged> _focusedAppSectionChangedListeners = new();
 
+        /// <summary>
+        /// A local state of errors that can be displayed to the User.
+        /// </summary>
         public ObservableCollection<string> Errors { get; } = new();
 
         private bool _isLoading;
 
+        /// <summary>
+        /// If the global app is in a loading state.
+        /// </summary>
         public bool IsLoading
         {
             get => _isLoading;
@@ -28,14 +41,23 @@ namespace SupasharpTodo.Shared.Services
 
         private bool _isLoggedIn;
 
+        /// <summary>
+        /// If the user is logged in.
+        /// </summary>
         public bool IsLoggedIn
         {
             get => _isLoggedIn;
-            set => SetField(ref _isLoggedIn, value);
+            private set => SetField(ref _isLoggedIn, value);
         }
 
+        /// <summary>
+        /// Shorthand accessor for the Current User.
+        /// </summary>
         public User? User => Supabase.Auth.CurrentUser;
 
+        /// <summary>
+        /// Returns the Avatar Url (if available) of the current user.
+        /// </summary>
         public string? AvatarUrl
         {
             get
@@ -49,40 +71,12 @@ namespace SupasharpTodo.Shared.Services
             }
         }
 
-        public void AddFocusedAppSectionChangedListener(IAppStateService.FocusedAppSectionChanged listener)
-        {
-            if (!_focusedAppSectionChangedListeners.Contains(listener))
-                _focusedAppSectionChangedListeners.Add(listener);
-        }
-
-        public void RemoveFocusedAppSectionChangedListener(IAppStateService.FocusedAppSectionChanged listener)
-        {
-            if (_focusedAppSectionChangedListeners.Contains(listener))
-                _focusedAppSectionChangedListeners.Remove(listener);
-        }
-
-        public void ClearFocusedAppSectionChangedListeners(IAppStateService.FocusedAppSectionChanged listener) =>
-            _focusedAppSectionChangedListeners.Clear();
-
-        public void SetFocusedAppSection(IAppStateService.AppSection gainedFocus)
-        {
-            var lostFocus = FocusedAppSection;
-            FocusedAppSection = gainedFocus;
-
-            NotifyFocusedAppSectionChanged(lostFocus, gainedFocus);
-        }
-
-        private void NotifyFocusedAppSectionChanged(IAppStateService.AppSection lostFocus,
-            IAppStateService.AppSection gainedFocus)
-        {
-            if (lostFocus == gainedFocus) return;
-
-            foreach (var listener in _focusedAppSectionChangedListeners.ToList())
-                listener.Invoke(lostFocus, gainedFocus);
-        }
-
         private Supabase.Client Supabase { get; }
 
+        /// <summary>
+        /// Registers the App State Service.
+        /// </summary>
+        /// <param name="client"></param>
         public AppStateService(Supabase.Client client)
         {
             Supabase = client;
@@ -92,11 +86,66 @@ namespace SupasharpTodo.Shared.Services
                 IsLoggedIn = true;
         }
 
+        /// <summary>
+        /// Registers a listener for change in focused app section.
+        /// </summary>
+        /// <param name="listener"></param>
+        public void AddFocusedAppSectionChangedListener(IAppStateService.FocusedAppSectionChanged listener)
+        {
+            if (!_focusedAppSectionChangedListeners.Contains(listener))
+                _focusedAppSectionChangedListeners.Add(listener);
+        }
+
+        /// <summary>
+        /// Removes a listener for change in focused app section.
+        /// </summary>
+        /// <param name="listener"></param>
+        public void RemoveFocusedAppSectionChangedListener(IAppStateService.FocusedAppSectionChanged listener)
+        {
+            if (_focusedAppSectionChangedListeners.Contains(listener))
+                _focusedAppSectionChangedListeners.Remove(listener);
+        }
+
+        /// <summary>
+        /// Clears all focused app section listeners.
+        /// </summary>
+        /// <param name="listener"></param>
+        public void ClearFocusedAppSectionChangedListeners(IAppStateService.FocusedAppSectionChanged listener) =>
+            _focusedAppSectionChangedListeners.Clear();
+
+        /// <summary>
+        /// Allows other classes to notify of change in focused app section.
+        /// </summary>
+        /// <param name="gainedFocus"></param>
+        public void SetFocusedAppSection(IAppStateService.AppSection gainedFocus)
+        {
+            var lostFocus = FocusedAppSection;
+            FocusedAppSection = gainedFocus;
+
+            NotifyFocusedAppSectionChanged(lostFocus, gainedFocus);
+        }
+
+        /// <summary>
+        /// Notifies listeners of change in app section.
+        /// </summary>
+        /// <param name="lostFocus"></param>
+        /// <param name="gainedFocus"></param>
+        private void NotifyFocusedAppSectionChanged(IAppStateService.AppSection lostFocus,
+            IAppStateService.AppSection gainedFocus)
+        {
+            if (lostFocus == gainedFocus) return;
+
+            foreach (var listener in _focusedAppSectionChangedListeners.ToList())
+                listener.Invoke(lostFocus, gainedFocus);
+        }
+
+        ///<inheritdoc />
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        ///<inheritdoc />
         private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return;
@@ -104,6 +153,11 @@ namespace SupasharpTodo.Shared.Services
             OnPropertyChanged(propertyName);
         }
 
+        /// <summary>
+        /// Listens with Gotrue for change in authentication state.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="state"></param>
         private void AuthEventHandler(IGotrueClient<User, Session> sender, Constants.AuthState state)
         {
             IsLoggedIn = state switch

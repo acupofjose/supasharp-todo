@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="Microsoft.JSInterop" Version="7.0.0" />
     <PackageReference Include="Radzen.Blazor" Version="4.15.10" />
-    <PackageReference Include="supabase-csharp" Version="0.13.1" />
+    <PackageReference Include="supabase-csharp" Version="0.13.3" />
     <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
