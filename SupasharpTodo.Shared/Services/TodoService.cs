@@ -55,7 +55,8 @@ public sealed class TodoService : ITodoService
 
             try
             {
-                await Supabase.From<Todo>().Insert(todo);
+                var inserted = await Supabase.From<Todo>().Insert(todo);
+                todo.Id = inserted.Model!.Id;
                 return true;
             }
             catch (PostgrestException ex)
@@ -221,7 +222,9 @@ public sealed class TodoService : ITodoService
         {
             case "INSERT":
                 Console.WriteLine($"Todo has been inserted: {model.Id}");
-                Todos.Add(model);
+                var existing = Todos.FirstOrDefault(t => t.Id == model.Id);
+                if (existing == null)
+                    Todos.Add(model);
                 break;
             case "UPDATE":
                 Console.WriteLine($"Todo has been updated: {model.Id}");
